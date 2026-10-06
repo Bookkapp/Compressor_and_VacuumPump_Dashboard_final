@@ -1,0 +1,211 @@
+{
+  "database": [
+    {
+      "border": "0.8px solid rgb(42, 48, 52)",
+      "class": "panel history-database-controls",
+      "headingSize": "17px",
+      "insetLeft": 28,
+      "insetRight": 28,
+      "padding": "22px 24px",
+      "radius": "6px"
+    },
+    {
+      "border": "0.8px solid rgb(42, 48, 52)",
+      "class": "panel database-table-panel",
+      "headingSize": "17px",
+      "insetLeft": 28,
+      "insetRight": 28,
+      "padding": "22px 24px",
+      "radius": "6px"
+    }
+  ],
+  "pendingSlots": [
+    340,
+    340,
+    340,
+    340
+  ],
+  "historical": [
+    {
+      "border": "0px none rgb(241, 243, 244)",
+      "class": "history-layout",
+      "headingSize": "17px",
+      "insetLeft": 28,
+      "insetRight": 28,
+      "padding": "0px",
+      "radius": "0px",
+      "width": 956.7999877929688
+    },
+    {
+      "border": "0.8px solid rgb(42, 48, 52)",
+      "class": "panel history-controls",
+      "headingSize": "17px",
+      "insetLeft": 28,
+      "insetRight": 674.7999877929688,
+      "padding": "22px 24px",
+      "radius": "6px",
+      "width": 310
+    },
+    {
+      "border": "0.8px solid rgb(42, 48, 52)",
+      "class": "panel",
+      "headingSize": "17px",
+      "insetLeft": 356,
+      "insetRight": 350.3999938964844,
+      "padding": "22px 24px",
+      "radius": "6px",
+      "width": 306.3999938964844
+    },
+    {
+      "border": "0.8px solid rgb(42, 48, 52)",
+      "class": "panel",
+      "headingSize": "17px",
+      "insetLeft": 678.4000244140625,
+      "insetRight": 27.999969482421875,
+      "padding": "22px 24px",
+      "radius": "6px",
+      "width": 306.3999938964844
+    },
+    {
+      "border": "0.8px solid rgb(42, 48, 52)",
+      "class": "panel",
+      "headingSize": "17px",
+      "insetLeft": 356,
+      "insetRight": 350.3999938964844,
+      "padding": "22px 24px",
+      "radius": "6px",
+      "width": 306.3999938964844
+    },
+    {
+      "border": "0.8px solid rgb(42, 48, 52)",
+      "class": "panel",
+      "headingSize": "17px",
+      "insetLeft": 678.4000244140625,
+      "insetRight": 27.999969482421875,
+      "padding": "22px 24px",
+      "radius": "6px",
+      "width": 306.3999938964844
+    },
+    {
+      "border": "0.8px solid rgb(42, 48, 52)",
+      "class": "panel history-summary",
+      "headingSize": "17px",
+      "insetLeft": 356,
+      "insetRight": 28,
+      "padding": "22px 24px",
+      "radius": "6px",
+      "width": 628.7999877929688
+    }
+  ],
+  "loadedSlots": [
+    340,
+    340,
+    340,
+    340
+  ],
+  "analytics": [
+    {
+      "class": "history-layout",
+      "insetLeft": 28,
+      "insetRight": 28,
+      "padding": "0px",
+      "radius": "0px"
+    },
+    {
+      "class": "panel history-controls",
+      "insetLeft": 28,
+      "insetRight": 674.7999877929688,
+      "padding": "22px 24px",
+      "radius": "6px"
+    },
+    {
+      "class": "panel",
+      "insetLeft": 356,
+      "insetRight": 28,
+      "padding": "22px 24px",
+      "radius": "6px"
+    }
+  ],
+  "analyticsMobile": {
+    "documentWidth": 375,
+    "insetLeft": 12,
+    "viewport": 375
+  },
+  "databaseMobile": {
+    "documentWidth": 375,
+    "panels": [
+      {
+        "insetLeft": 12,
+        "insetRight": 12,
+        "padding": "22px 24px"
+      },
+      {
+        "insetLeft": 12,
+        "insetRight": 12,
+        "padding": "22px 24px"
+      }
+    ],
+    "viewport": 375
+  },
+  "databaseMedium": [
+    {
+      "fieldWidth": 527.6000366210938,
+      "width": 527.6000366210938
+    },
+    {
+      "fieldWidth": 527.6000366210938,
+      "width": 527.6000366210938
+    },
+    {
+      "fieldWidth": 527.6000366210938,
+      "width": 527.6000366210938
+    }
+  ],
+  "alerts": [
+    {
+      "border": "0.8px solid rgb(42, 48, 52)",
+      "headingSize": "17px",
+      "insetLeft": 28,
+      "insetRight": 28,
+      "padding": "22px 24px",
+      "radius": "6px"
+    }
+  ],
+  "logs": [
+    {
+      "border": "0.8px solid rgb(42, 48, 52)",
+      "headingSize": "17px",
+      "insetLeft": 28,
+      "insetRight": 28,
+      "padding": "22px 24px",
+      "radius": "6px"
+    }
+  ],
+  "maintenance": [
+    {
+      "border": "0.8px solid rgb(42, 48, 52)",
+      "headingSize": "17px",
+      "insetLeft": 28,
+      "insetRight": 28,
+      "padding": "22px 24px",
+      "radius": "6px"
+    }
+  ],
+  "production": {
+    "documentWidth": 1265,
+    "scripts": [
+      "/assets/index-DMtQz9TP.js"
+    ],
+    "viewport": 1265
+  },
+  "historicalMobile": {
+    "documentWidth": 375,
+    "slotHeights": [
+      310,
+      310,
+      310,
+      310
+    ],
+    "viewport": 375
+  }
+}

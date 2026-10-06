@@ -1,0 +1,45 @@
+.env
+.env.*
+!.env.example
+SECRETS_SERVER_LOCAL.md
+docs/SECRETS_SERVER_LOCAL.md
+
+node_modules/
+.tmp/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.coverage
+
+.venv/
+venv/
+env/
+.mysql/
+.mysql-download/
+
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+
+# Pre-existing nested legacy project; the repository root is the active app.
+Predictive-Maintenance-Dashboard/
+
+*.sqlite
+*.sqlite3
+*.db
+# Reproducible local visual-QA evidence, not shipped with the Server build.
+frontend/tests/fixtures/
+
+# Explicit owner-authorized private final release configuration
+!.env
+!deployment/configuration_archive/
+!deployment/configuration_archive/**
+!deployment/models/
+!deployment/models/**
+/runtime/

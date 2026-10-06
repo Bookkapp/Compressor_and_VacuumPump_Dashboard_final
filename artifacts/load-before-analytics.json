@@ -1,0 +1,228 @@
+{
+  "case": "analytics",
+  "tabs": 6,
+  "requests": 24,
+  "wall_ms": 2795,
+  "median_ms": 1552,
+  "p95_ms": 2595,
+  "max_ms": 2666,
+  "errors": 0,
+  "results": [
+    {
+      "tab": 1,
+      "endpoint": "history",
+      "ms": 126,
+      "encode_ms": 67,
+      "rows": 480,
+      "bytes": 263396,
+      "ok": true
+    },
+    {
+      "tab": 1,
+      "endpoint": "history",
+      "ms": 180,
+      "encode_ms": 41,
+      "rows": 480,
+      "bytes": 263428,
+      "ok": true
+    },
+    {
+      "tab": 1,
+      "endpoint": "history",
+      "ms": 444,
+      "encode_ms": 98,
+      "rows": 480,
+      "bytes": 263201,
+      "ok": true
+    },
+    {
+      "tab": 1,
+      "endpoint": "history",
+      "ms": 470,
+      "encode_ms": 50,
+      "rows": 480,
+      "bytes": 262998,
+      "ok": true
+    },
+    {
+      "tab": 2,
+      "endpoint": "history",
+      "ms": 1156,
+      "encode_ms": 68,
+      "rows": 480,
+      "bytes": 263415,
+      "ok": true
+    },
+    {
+      "tab": 2,
+      "endpoint": "history",
+      "ms": 1414,
+      "encode_ms": 143,
+      "rows": 480,
+      "bytes": 263456,
+      "ok": true
+    },
+    {
+      "tab": 2,
+      "endpoint": "history",
+      "ms": 1507,
+      "encode_ms": 142,
+      "rows": 480,
+      "bytes": 263151,
+      "ok": true
+    },
+    {
+      "tab": 2,
+      "endpoint": "history",
+      "ms": 1597,
+      "encode_ms": 94,
+      "rows": 480,
+      "bytes": 262984,
+      "ok": true
+    },
+    {
+      "tab": 3,
+      "endpoint": "history",
+      "ms": 1663,
+      "encode_ms": 45,
+      "rows": 480,
+      "bytes": 263565,
+      "ok": true
+    },
+    {
+      "tab": 3,
+      "endpoint": "history",
+      "ms": 284,
+      "encode_ms": 28,
+      "rows": 480,
+      "bytes": 263520,
+      "ok": true
+    },
+    {
+      "tab": 3,
+      "endpoint": "history",
+      "ms": 1835,
+      "encode_ms": 166,
+      "rows": 480,
+      "bytes": 263277,
+      "ok": true
+    },
+    {
+      "tab": 3,
+      "endpoint": "history",
+      "ms": 1906,
+      "encode_ms": 106,
+      "rows": 480,
+      "bytes": 263041,
+      "ok": true
+    },
+    {
+      "tab": 4,
+      "endpoint": "history",
+      "ms": 1961,
+      "encode_ms": 66,
+      "rows": 480,
+      "bytes": 263239,
+      "ok": true
+    },
+    {
+      "tab": 4,
+      "endpoint": "history",
+      "ms": 2053,
+      "encode_ms": 109,
+      "rows": 480,
+      "bytes": 263401,
+      "ok": true
+    },
+    {
+      "tab": 4,
+      "endpoint": "history",
+      "ms": 2326,
+      "encode_ms": 42,
+      "rows": 480,
+      "bytes": 263070,
+      "ok": true
+    },
+    {
+      "tab": 4,
+      "endpoint": "history",
+      "ms": 385,
+      "encode_ms": 56,
+      "rows": 480,
+      "bytes": 263007,
+      "ok": true
+    },
+    {
+      "tab": 5,
+      "endpoint": "history",
+      "ms": 1736,
+      "encode_ms": 146,
+      "rows": 480,
+      "bytes": 263320,
+      "ok": true
+    },
+    {
+      "tab": 5,
+      "endpoint": "history",
+      "ms": 608,
+      "encode_ms": 36,
+      "rows": 480,
+      "bytes": 263438,
+      "ok": true
+    },
+    {
+      "tab": 5,
+      "endpoint": "history",
+      "ms": 2091,
+      "encode_ms": 96,
+      "rows": 480,
+      "bytes": 263282,
+      "ok": true
+    },
+    {
+      "tab": 5,
+      "endpoint": "history",
+      "ms": 2666,
+      "encode_ms": 63,
+      "rows": 480,
+      "bytes": 263034,
+      "ok": true
+    },
+    {
+      "tab": 6,
+      "endpoint": "history",
+      "ms": 2302,
+      "encode_ms": 271,
+      "rows": 2000,
+      "bytes": 1086166,
+      "ok": true
+    },
+    {
+      "tab": 6,
+      "endpoint": "history",
+      "ms": 956,
+      "encode_ms": 104,
+      "rows": 1404,
+      "bytes": 775616,
+      "ok": true
+    },
+    {
+      "tab": 6,
+      "endpoint": "history",
+      "ms": 2595,
+      "encode_ms": 184,
+      "rows": 1404,
+      "bytes": 775696,
+      "ok": true
+    },
+    {
+      "tab": 6,
+      "endpoint": "history",
+      "ms": 1336,
+      "encode_ms": 237,
+      "rows": 1404,
+      "bytes": 775024,
+      "ok": true
+    }
+  ]
+}

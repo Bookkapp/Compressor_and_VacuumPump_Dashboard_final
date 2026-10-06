@@ -1,0 +1,183 @@
+{
+  "scenario": "6 real localhost tabs, 6 Compressor machines, 4 modules and 4 metrics per tab, all available history",
+  "machines": [
+    "070",
+    "071",
+    "072",
+    "080",
+    "081",
+    "082"
+  ],
+  "before": [
+    {
+      "tab": 1,
+      "loaded": [
+        "โหลดเสร็จใน 5385 ms · 1920 ตัวอย่าง"
+      ],
+      "canvases": 3,
+      "renderMs": [
+        "290",
+        "88",
+        "52",
+        null
+      ],
+      "errors": 0
+    },
+    {
+      "tab": 2,
+      "loaded": [
+        "โหลดเสร็จใน 5795 ms · 1920 ตัวอย่าง"
+      ],
+      "canvases": 3,
+      "renderMs": [
+        "51",
+        "66",
+        "319",
+        null
+      ],
+      "errors": 0
+    },
+    {
+      "tab": 3,
+      "loaded": [
+        "โหลดเสร็จใน 7391 ms · 1920 ตัวอย่าง"
+      ],
+      "canvases": 3,
+      "renderMs": [
+        "415",
+        "46",
+        "69",
+        null
+      ],
+      "errors": 0
+    },
+    {
+      "tab": 4,
+      "loaded": [
+        "โหลดเสร็จใน 7399 ms · 5616 ตัวอย่าง"
+      ],
+      "canvases": 3,
+      "renderMs": [
+        "70",
+        "300",
+        "128",
+        null
+      ],
+      "errors": 0
+    },
+    {
+      "tab": 5,
+      "loaded": [
+        "โหลดเสร็จใน 5366 ms · 1920 ตัวอย่าง"
+      ],
+      "canvases": 3,
+      "renderMs": [
+        "388",
+        "50",
+        "94",
+        null
+      ],
+      "errors": 0
+    },
+    {
+      "tab": 6,
+      "loaded": [
+        "โหลดเสร็จใน 4290 ms · 1920 ตัวอย่าง"
+      ],
+      "canvases": 3,
+      "renderMs": [
+        "52",
+        "59",
+        "316",
+        null
+      ],
+      "errors": 0
+    }
+  ],
+  "after": [
+    {
+      "tab": 1,
+      "loaded": [
+        "โหลดเสร็จใน 672 ms · 1920 ตัวอย่าง"
+      ],
+      "canvases": 3,
+      "renderMs": [
+        "167",
+        "83",
+        "79",
+        null
+      ],
+      "errors": 0
+    },
+    {
+      "tab": 2,
+      "loaded": [
+        "โหลดเสร็จใน 4172 ms · 1920 ตัวอย่าง"
+      ],
+      "canvases": 3,
+      "renderMs": [
+        "207",
+        "63",
+        "77",
+        null
+      ],
+      "errors": 0
+    },
+    {
+      "tab": 3,
+      "loaded": [
+        "โหลดเสร็จใน 1222 ms · 1920 ตัวอย่าง"
+      ],
+      "canvases": 3,
+      "renderMs": [
+        "251",
+        "56",
+        "74",
+        null
+      ],
+      "errors": 0
+    },
+    {
+      "tab": 4,
+      "loaded": [
+        "โหลดเสร็จใน 4185 ms · 5616 ตัวอย่าง"
+      ],
+      "canvases": 3,
+      "renderMs": [
+        "240",
+        "127",
+        "60",
+        null
+      ],
+      "errors": 0
+    },
+    {
+      "tab": 5,
+      "loaded": [
+        "โหลดเสร็จใน 2719 ms · 1920 ตัวอย่าง"
+      ],
+      "canvases": 3,
+      "renderMs": [
+        "71",
+        "76",
+        "274",
+        null
+      ],
+      "errors": 0
+    },
+    {
+      "tab": 6,
+      "loaded": [
+        "โหลดเสร็จใน 1721 ms · 1920 ตัวอย่าง"
+      ],
+      "canvases": 3,
+      "renderMs": [
+        "320",
+        "53",
+        "49",
+        null
+      ],
+      "errors": 0
+    }
+  ]
+}

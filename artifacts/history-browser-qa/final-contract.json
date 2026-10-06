@@ -1,0 +1,17 @@
+{
+  "latest": {
+    "status": 200,
+    "points": 1200,
+    "sampled": false,
+    "latest_limited": true
+  },
+  "bad_module": {
+    "status": 404
+  },
+  "bad_signal": {
+    "status": 422
+  },
+  "removed_graph": {
+    "status": 404
+  }
+}

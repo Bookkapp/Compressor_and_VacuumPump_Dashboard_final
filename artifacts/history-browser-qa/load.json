@@ -1,0 +1,293 @@
+{
+  "requests": 28,
+  "workers": 12,
+  "cold": [
+    {
+      "machine": "HT9046MX-777",
+      "module": "compressor-m1",
+      "ms": 944.55,
+      "total": 32887,
+      "points": 1198,
+      "sampled": true
+    },
+    {
+      "machine": "HT9046MX-777",
+      "module": "compressor-m5",
+      "ms": 192.16,
+      "total": 32887,
+      "points": 1198,
+      "sampled": true
+    },
+    {
+      "machine": "HT9046MX-017",
+      "module": "compressor-m1",
+      "ms": 137.16,
+      "total": 480,
+      "points": 480,
+      "sampled": false
+    },
+    {
+      "machine": "HT9046MX-017",
+      "module": "compressor-m5",
+      "ms": 66.04,
+      "total": 480,
+      "points": 480,
+      "sampled": false
+    },
+    {
+      "machine": "HT9046MX-017",
+      "module": "vacuum-pump",
+      "ms": 22.08,
+      "total": 60,
+      "points": 60,
+      "sampled": false
+    },
+    {
+      "machine": "HT9046MX-080",
+      "module": "compressor-m1",
+      "ms": 144.02,
+      "total": 8582,
+      "points": 340,
+      "sampled": true
+    },
+    {
+      "machine": "HT9046MX-080",
+      "module": "compressor-m5",
+      "ms": 54.09,
+      "total": 8582,
+      "points": 340,
+      "sampled": true
+    }
+  ],
+  "concurrent": [
+    {
+      "machine": "HT9046MX-777",
+      "module": "compressor-m1",
+      "ms": 341.3,
+      "total": 32887,
+      "points": 1198,
+      "sampled": true
+    },
+    {
+      "machine": "HT9046MX-777",
+      "module": "compressor-m5",
+      "ms": 354.67,
+      "total": 32887,
+      "points": 1198,
+      "sampled": true
+    },
+    {
+      "machine": "HT9046MX-017",
+      "module": "compressor-m1",
+      "ms": 466.65,
+      "total": 480,
+      "points": 480,
+      "sampled": false
+    },
+    {
+      "machine": "HT9046MX-017",
+      "module": "compressor-m5",
+      "ms": 742.29,
+      "total": 480,
+      "points": 480,
+      "sampled": false
+    },
+    {
+      "machine": "HT9046MX-017",
+      "module": "vacuum-pump",
+      "ms": 734.14,
+      "total": 60,
+      "points": 60,
+      "sampled": false
+    },
+    {
+      "machine": "HT9046MX-080",
+      "module": "compressor-m1",
+      "ms": 957.7,
+      "total": 8582,
+      "points": 340,
+      "sampled": true
+    },
+    {
+      "machine": "HT9046MX-080",
+      "module": "compressor-m5",
+      "ms": 1012.09,
+      "total": 8582,
+      "points": 340,
+      "sampled": true
+    },
+    {
+      "machine": "HT9046MX-777",
+      "module": "compressor-m1",
+      "ms": 1038.46,
+      "total": 32887,
+      "points": 1198,
+      "sampled": true
+    },
+    {
+      "machine": "HT9046MX-777",
+      "module": "compressor-m5",
+      "ms": 1090.18,
+      "total": 32887,
+      "points": 1198,
+      "sampled": true
+    },
+    {
+      "machine": "HT9046MX-017",
+      "module": "compressor-m1",
+      "ms": 1094.55,
+      "total": 480,
+      "points": 480,
+      "sampled": false
+    },
+    {
+      "machine": "HT9046MX-017",
+      "module": "compressor-m5",
+      "ms": 1103.7,
+      "total": 480,
+      "points": 480,
+      "sampled": false
+    },
+    {
+      "machine": "HT9046MX-017",
+      "module": "vacuum-pump",
+      "ms": 1102.85,
+      "total": 60,
+      "points": 60,
+      "sampled": false
+    },
+    {
+      "machine": "HT9046MX-080",
+      "module": "compressor-m1",
+      "ms": 812.83,
+      "total": 8582,
+      "points": 340,
+      "sampled": true
+    },
+    {
+      "machine": "HT9046MX-080",
+      "module": "compressor-m5",
+      "ms": 909.81,
+      "total": 8582,
+      "points": 340,
+      "sampled": true
+    },
+    {
+      "machine": "HT9046MX-777",
+      "module": "compressor-m1",
+      "ms": 971.32,
+      "total": 32887,
+      "points": 1198,
+      "sampled": true
+    },
+    {
+      "machine": "HT9046MX-777",
+      "module": "compressor-m5",
+      "ms": 912.05,
+      "total": 32887,
+      "points": 1198,
+      "sampled": true
+    },
+    {
+      "machine": "HT9046MX-017",
+      "module": "compressor-m1",
+      "ms": 1018.2,
+      "total": 480,
+      "points": 480,
+      "sampled": false
+    },
+    {
+      "machine": "HT9046MX-017",
+      "module": "compressor-m5",
+      "ms": 821.86,
+      "total": 480,
+      "points": 480,
+      "sampled": false
+    },
+    {
+      "machine": "HT9046MX-017",
+      "module": "vacuum-pump",
+      "ms": 780.31,
+      "total": 60,
+      "points": 60,
+      "sampled": false
+    },
+    {
+      "machine": "HT9046MX-080",
+      "module": "compressor-m1",
+      "ms": 892.53,
+      "total": 8582,
+      "points": 340,
+      "sampled": true
+    },
+    {
+      "machine": "HT9046MX-080",
+      "module": "compressor-m5",
+      "ms": 989.63,
+      "total": 8582,
+      "points": 340,
+      "sampled": true
+    },
+    {
+      "machine": "HT9046MX-777",
+      "module": "compressor-m1",
+      "ms": 1051.71,
+      "total": 32887,
+      "points": 1198,
+      "sampled": true
+    },
+    {
+      "machine": "HT9046MX-777",
+      "module": "compressor-m5",
+      "ms": 1054.57,
+      "total": 32887,
+      "points": 1198,
+      "sampled": true
+    },
+    {
+      "machine": "HT9046MX-017",
+      "module": "compressor-m1",
+      "ms": 1046.54,
+      "total": 480,
+      "points": 480,
+      "sampled": false
+    },
+    {
+      "machine": "HT9046MX-017",
+      "module": "compressor-m5",
+      "ms": 1057.61,
+      "total": 480,
+      "points": 480,
+      "sampled": false
+    },
+    {
+      "machine": "HT9046MX-017",
+      "module": "vacuum-pump",
+      "ms": 952.17,
+      "total": 60,
+      "points": 60,
+      "sampled": false
+    },
+    {
+      "machine": "HT9046MX-080",
+      "module": "compressor-m1",
+      "ms": 774.32,
+      "total": 8582,
+      "points": 340,
+      "sampled": true
+    },
+    {
+      "machine": "HT9046MX-080",
+      "module": "compressor-m5",
+      "ms": 586.45,
+      "total": 8582,
+      "points": 340,
+      "sampled": true
+    }
+  ],
+  "median_ms": 954.93,
+  "p95_ms": 1102.85,
+  "max_ms": 1103.7,
+  "old_hour_points": 60,
+  "page_overlap": false
+}

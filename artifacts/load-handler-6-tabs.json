@@ -1,0 +1,146 @@
+{
+  "date": "2026-09-30",
+  "environment": "Local app port 5001, configured read-only MySQL sources",
+  "compressor": [
+    {
+      "machine": "070",
+      "loadMs": 217,
+      "samples": 480,
+      "error": false,
+      "stageRenderMs": 177
+    },
+    {
+      "machine": "071",
+      "loadMs": 2183,
+      "samples": 480,
+      "error": false,
+      "stageRenderMs": 161
+    },
+    {
+      "machine": "072",
+      "loadMs": 2162,
+      "samples": 480,
+      "error": false,
+      "stageRenderMs": 148
+    },
+    {
+      "machine": "080",
+      "loadMs": 1283,
+      "samples": 2000,
+      "error": false,
+      "stageRenderMs": 264
+    },
+    {
+      "machine": "081",
+      "loadMs": 1969,
+      "samples": 480,
+      "error": false,
+      "stageRenderMs": 206
+    },
+    {
+      "machine": "082",
+      "loadMs": 606,
+      "samples": 480,
+      "error": false,
+      "stageRenderMs": 166
+    }
+  ],
+  "vacuum": [
+    {
+      "machine": "071",
+      "loadMs": 141,
+      "samples": 60,
+      "error": false
+    },
+    {
+      "machine": "072",
+      "loadMs": 129,
+      "samples": 60,
+      "error": false
+    },
+    {
+      "machine": "081",
+      "loadMs": 177,
+      "samples": 60,
+      "error": false
+    }
+  ],
+  "emptyRanges": [
+    {
+      "canvas": 0,
+      "error": false,
+      "samples": 0,
+      "text": "ไม่มีข้อมูล Sensor ในช่วงเวลาที่เลือกดูข้อมูลล่าสุดที่มีช่วง 1h–7d นับย้อนหลังจากเวลาปัจจุบันข้อมูล Sensor ล่าสุดเมื่อ: 19/9/2026 13:37:54"
+    },
+    {
+      "canvas": 0,
+      "error": false,
+      "samples": 0,
+      "text": "ไม่มีข้อมูล Sensor ในช่วงเวลาที่เลือกดูข้อมูลล่าสุดที่มีช่วง 1h–7d นับย้อนหลังจากเวลาปัจจุบันข้อมูล Sensor ล่าสุดเมื่อ: 16/9/2026 18:20:04"
+    }
+  ],
+  "pollStable": [
+    {
+      "machine": "071",
+      "error": false,
+      "samples": 60,
+      "source": "Vacuum Pump1 โมดูล",
+      "stageUpdates": "1"
+    },
+    {
+      "machine": "072",
+      "error": false,
+      "samples": 60,
+      "source": "Vacuum Pump1 โมดูล",
+      "stageUpdates": "1"
+    },
+    {
+      "machine": "080",
+      "error": false,
+      "samples": 2000,
+      "source": "Compressor8 โมดูล",
+      "stageUpdates": "1"
+    },
+    {
+      "machine": "081",
+      "error": false,
+      "samples": 60,
+      "source": "Vacuum Pump1 โมดูล",
+      "stageUpdates": "1"
+    },
+    {
+      "machine": "082",
+      "error": false,
+      "samples": 480,
+      "source": "Compressor8 โมดูล",
+      "stageUpdates": "1"
+    }
+  ],
+  "crossPage": {
+    "databaseVacuumColumns": [
+      "เวลาบันทึก",
+      "เครื่อง",
+      "โมดูล",
+      "Estimated Pressure (kPa)",
+      "Vibration (mm/s)",
+      "Temperature (°C)",
+      "Current (A)",
+      "Acceleration X (g)",
+      "Acceleration Y (g)",
+      "Acceleration Z (g)"
+    ],
+    "databaseVacuumRows": 60,
+    "analytic": "โหลดเสร็จใน 24 ms · 60 ตัวอย่าง",
+    "analyticCanvas": 1,
+    "errors": [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+    ]
+  },
+  "meanCompressorLoadMs": 1403,
+  "maxCompressorLoadMs": 2183
+}

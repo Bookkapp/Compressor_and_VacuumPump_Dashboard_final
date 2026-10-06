@@ -1,0 +1,37 @@
+{
+  "tabs": 4,
+  "pendingSlots": [
+    {
+      "height": 340,
+      "pending": true
+    },
+    {
+      "height": 340,
+      "pending": true
+    },
+    {
+      "height": 340,
+      "pending": true
+    },
+    {
+      "height": 340,
+      "pending": true
+    }
+  ],
+  "loadedSlots": [
+    340,
+    340,
+    340,
+    340
+  ],
+  "analyticsSummary": "Sample Summary\n\nStatistics below describe displayed samples, not every source reading.\n\nMachine\tModule\tMetric\tSamples\tLatest\tAvg\tMin\tMax\nHT9046MX-017\tM5 · SH1\tHP 2nd\t60\t195\t194.91\t194.6\t195.1\nHT9046MX-017\tVacuum Pump\tEstimated Pressure (kPa)\t60\t-63.834\t-62.089\t-66.137\t-57.369\nHT9046MX-777\tM5 · SH1\tHP 2nd\t1,200\t242.203\t242.246\t240.609\t244.045",
+  "pagination": "Previous\n101–200 / 1,440 source readings\nNext",
+  "staleSelectionHasSummary": 0,
+  "staticBundle": [
+    "/assets/index-CP2I-7PU.js"
+  ],
+  "finalStaticBundle": [
+    "/assets/index-BAvyCSoV.js"
+  ],
+  "finalStaticConsoleErrors": []
+}
