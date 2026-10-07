@@ -1,0 +1,68 @@
+{
+  "clients": 10,
+  "successful_reads": 90,
+  "elapsed_seconds": 9.32,
+  "warm_median_ms": 346.09,
+  "warm_p95_ms": 4422.5,
+  "scope": "Local QA metadata; source SELECT only; excludes browser rendering and Server network; first harness pass may hit shared cache",
+  "source_writes": 0,
+  "profile_writes": 0,
+  "initial_history_reads": [
+    {
+      "path": "/api/devices/1/history?module_id=1&limit=2000",
+      "rows": 2000,
+      "ms": 943.08
+    },
+    {
+      "path": "/api/devices/1/history?module_id=12&limit=2000",
+      "rows": 60,
+      "ms": 137.04
+    },
+    {
+      "path": "/api/devices/2/history?module_id=32&limit=2000",
+      "rows": 2000,
+      "ms": 1133.55
+    },
+    {
+      "path": "/api/devices/2/history?module_id=5&limit=2000",
+      "rows": 60,
+      "ms": 17.41
+    },
+    {
+      "path": "/api/devices/4/history?module_id=48&limit=2000",
+      "rows": 2000,
+      "ms": 1058.99
+    },
+    {
+      "path": "/api/devices/4/history?module_id=7&limit=2000",
+      "rows": 60,
+      "ms": 18.82
+    },
+    {
+      "path": "/api/devices/6/history?module_id=64&limit=2000",
+      "rows": 2000,
+      "ms": 997.91
+    },
+    {
+      "path": "/api/devices/6/history?module_id=9&limit=2000",
+      "rows": 60,
+      "ms": 15.16
+    },
+    {
+      "path": "/api/devices/21/history?module_id=128&limit=2000",
+      "rows": 1404,
+      "ms": 910.11
+    },
+    {
+      "path": "/api/devices/13/history?module_id=136&limit=2000",
+      "rows": 2000,
+      "ms": 1584.2
+    },
+    {
+      "path": "/api/devices/13/history?module_id=17&limit=2000",
+      "rows": 60,
+      "ms": 20.74
+    }
+  ],
+  "concurrent_vite_build": true
+}

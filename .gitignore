@@ -44,3 +44,5 @@ frontend/tests/fixtures/
 !deployment/models/**
 /runtime/
 /deployment/runtime/
+
+/artifacts/operation-pull-qa/qa_database.txt

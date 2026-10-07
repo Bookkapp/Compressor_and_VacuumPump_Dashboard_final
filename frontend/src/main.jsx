@@ -1,6 +1,7 @@
+import { PRESSURE_COLORS, bindChartCoordinates, pressureAxis, controlStateOption } from "./chart-behavior.mjs";
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { LANGUAGE_KEY, translate } from "./i18n";
-import { COMPRESSOR_SIGNALS, VACUUM_SIGNALS, historyRowsEqual, historyCorrelation, historyRelationship } from "./detail-telemetry.mjs";
+import { COMPRESSOR_SIGNALS, COMPRESSOR_HISTORY_SIGNALS, VACUUM_SIGNALS, historyRowsEqual, historyCorrelation, historyRelationship } from "./detail-telemetry.mjs";
 import { HistoricalCharts, HistoricalDatabase } from "./HistoryPages";
 import { createRoot } from "react-dom/client";
 import { createPortal } from "react-dom";
@@ -71,6 +72,7 @@ const HANDLER_FILTER_OPTIONS = [
   { key: "REPAIR_NOW", label: "Repair Now", statuses: ["MAINTENANCE_REQUIRED"] },
   { key: "REPAIRING", label: "Repairing", statuses: ["UNDER_MAINTENANCE"] },
   { key: "OFFLINE", label: "Offline", statuses: ["OFFLINE"] },
+  { key: "NOT_EVALUATED", label: "Not evaluated", statuses: ["NOT_EVALUATED", "AWAITING_ML_SCORE"] },
 ];
 const HANDLER_FILTER_BY_KEY = Object.fromEntries(HANDLER_FILTER_OPTIONS.map((item) => [item.key, item]));
 const MODULE_STATUS_OPTIONS = [
@@ -108,6 +110,7 @@ function dateText(value) {
 }
 
 function conditionLabel(value) {
+  if (value === "NOT_EVALUATED") return "NOT EVALUATED";
   if (value === "UNREGISTERED") return "UNREGISTERED";
   if (value === "AWAITING_ML_SCORE") return "AWAITING ML SCORE";
   if (value === "MAINTENANCE_REQUIRED") return "REPAIR NOW";
@@ -274,6 +277,7 @@ function EChart({ option, className = "chart" }) {
       const started = performance.now();
       const chart = echarts.init(node, null, { renderer: "canvas" });
       chartRef.current = chart;
+      node._unbindChartCoordinates = bindChartCoordinates(node, chart);
       chart.on("finished", () => { if (!node.dataset.renderMs) node.dataset.renderMs = String(Math.round(performance.now() - started)); });
       chart.setOption(chartOptionForTheme(latest.current.option, latest.current.themeMode), true);
       node.dataset.optionUpdates = "1";
@@ -286,8 +290,10 @@ function EChart({ option, className = "chart" }) {
     observer.observe(node);
     const resize = () => chartRef.current?.resize();
     window.addEventListener("resize", resize);
+    const sizeObserver = new ResizeObserver(resize);
+    sizeObserver.observe(node);
     return () => {
-      observer.disconnect(); window.removeEventListener("resize", resize);
+      observer.disconnect(); sizeObserver.disconnect(); node._unbindChartCoordinates?.(); window.removeEventListener("resize", resize);
       chartRef.current?.dispose(); chartRef.current = null;
     };
   }, []);
@@ -678,7 +684,7 @@ function App() {
       inFlight = true;
       const since = sinceFromRange(detailTimeRange);
       const sinceQuery = since ? `&since=${encodeURIComponent(since)}` : "";
-      const signals = (stableDetailSource === "compressor" ? COMPRESSOR_SIGNALS : VACUUM_SIGNALS).join(",");
+      const signals = (stableDetailSource === "compressor" ? COMPRESSOR_HISTORY_SIGNALS : VACUUM_SIGNALS).join(",");
       try {
         const nextHistory = await api(`/api/devices/${stableDetailDeviceId}/history?module_id=${stableDetailModuleId}&limit=2000&signals=${signals}${sinceQuery}`, { signal: abort.signal });
         if (!active) return;
@@ -1280,6 +1286,7 @@ function Overview({ summary, devices, workOrders, alerts, api, refresh, refreshi
     { label: "Repair now", filter: "REPAIR_NOW", value: repairDevices, color: COLOR_DANGER },
     { label: "Repairing", filter: "REPAIRING", value: repairingDevices, color: COLOR_BLUE },
     { label: "Offline", filter: "OFFLINE", value: offlineDevices, color: COLOR_OFFLINE },
+    { label: "Not evaluated", filter: "NOT_EVALUATED", value: counts.NOT_EVALUATED || 0, color: COLOR_OFFLINE },
   ];
   const maxSystemStatus = Math.max(...systemStatusBars.map((item) => item.value), 1);
 
@@ -1377,19 +1384,20 @@ function FleetHealthTrend({ api, refreshKey }) {
   const [error, setError] = useState("");
   useEffect(() => {
     let active = true;
-    setLoading(true);
     setError("");
-    api(`/api/overview/health-trend?range=${range}`)
+    const load = () => api(`/api/overview/health-trend?range=${range}`)
       .then((result) => { if (active) setData(result); })
-      .catch((cause) => { if (active) { setData(null); setError(String(cause.message || cause)); } })
+      .catch((cause) => { if (active) setError(String(cause.message || cause)); })
       .finally(() => { if (active) setLoading(false); });
-    return () => { active = false; };
+    load();
+    const timer=setInterval(load,60000);
+    return () => { active = false; clearInterval(timer); };
   }, [api, range, refreshKey]);
 
   const points = data?.range === range ? data.points || [] : [];
   const hasObservations = points.some((point) => point.observed > 0);
   const option = useMemo(() => ({
-    color: [COLOR_GOOD, COLOR_WARN, COLOR_DANGER],
+    color: [COLOR_GOOD, COLOR_WARN, COLOR_DANGER, COLOR_OFFLINE, "#8b5cf6", "#94a3b8"],
     grid: { left: 34, right: 12, top: 20, bottom: 31 },
     tooltip: {
       trigger: "axis", confine: true,
@@ -1399,24 +1407,28 @@ function FleetHealthTrend({ api, refreshKey }) {
         return `${new Date(point.at).toLocaleString()}<br/>${items.map((item) => `${item.marker} ${item.seriesName}: ${item.value ?? "—"}`).join("<br/>")}<br/>${t("Observed modules")}: ${point.observed}`;
       },
     },
-    xAxis: { type: "category", boundaryGap: false, data: points.map((point) => point.at.slice(5, 10)), axisTick: { show: false }, axisLabel: { interval: 0 }, axisLine: { lineStyle: { color: CHART_GRID } } },
+    xAxis: { type: "category", boundaryGap: false, data: points.map((point) => new Date(point.at).toLocaleString("en-GB", {timeZone:"Asia/Bangkok",month:"2-digit",day:"2-digit",hour:"2-digit",hourCycle:"h23"})), axisTick: { show: false }, axisLabel: { hideOverlap:true }, axisLine: { lineStyle: { color: CHART_GRID } } },
     yAxis: { type: "value", min: 0, minInterval: 1, splitLine: { lineStyle: { color: CHART_GRID } } },
     series: [
       { name: t("Good"), key: "good", color: COLOR_GOOD },
       { name: t("Warning"), key: "warning", color: COLOR_WARN },
       { name: t("Repair now"), key: "repair_now", color: COLOR_DANGER },
-    ].map((item) => ({ name: item.name, type: "line", data: points.map((point) => point[item.key]), smooth: 0.15, connectNulls: false, symbol: "circle", symbolSize: 8, showSymbol: true, lineStyle: { width: 2.5 }, areaStyle: { opacity: 0.06 }, itemStyle: { color: item.color } })),
+      { name: t("Offline"), key:"offline",color:COLOR_OFFLINE },
+      { name: t("Not evaluated"), key:"not_evaluated",color:"#8b5cf6" },
+      { name: t("No signal"), key:"no_signal",color:"#94a3b8" },
+      { name: t("Repairing"), key:"maintenance",color:COLOR_BLUE },
+    ].map((item) => ({ name: item.name, type: "line", data: points.map((point) => point[item.key]), smooth: false, connectNulls: false, symbol: "circle", symbolSize: 4, showSymbol: false, lineStyle: { width: 2.5 }, areaStyle: { opacity: 0.06 }, itemStyle: { color: item.color } })),
   }), [points, range, t]);
 
   return (
     <article className="panel overview-trend-panel">
       <div className="panel-head overview-trend-head">
-        <div><h3>{t("Fleet Health Trend")}</h3><p className="panel-note">{t("Last 7 days of recorded diagnostics")}</p></div>
+        <div><h3>{t("Fleet Health Trend")}</h3><p className="panel-note">{t("Module status at each completed hour · last 7 days")}</p></div>
       </div>
       {loading ? <Skeleton height={242} /> : error ? <div className="overview-trend-state" role="alert">{t("Could not load health trend")}: {error}</div> : !hasObservations ? <div className="overview-trend-state">{t("No diagnostic history in this period")}</div> : <EChart option={option} className="overview-trend-chart" />}
       <div className="overview-trend-footer">
-        <div className="overview-trend-legend"><span className="good">{t("Good")}</span><span className="warning">{t("Warning")}</span><span className="repair">{t("Repair now")}</span></div>
-        <small>{t("Gaps mean no diagnostic data recorded that day")}</small>
+        <div className="overview-trend-legend"><span className="good">{t("Good")}</span><span className="warning">{t("Warning")}</span><span className="repair">{t("Repair now")}</span><span style={{color:COLOR_OFFLINE}}>{t("Offline")}</span><span style={{color:"#8b5cf6"}}>{t("Not evaluated")}</span><span style={{color:"#94a3b8"}}>{t("No signal")}</span><span style={{color:COLOR_BLUE}}>{t("Repairing")}</span></div>
+        <small>{t("Gaps mean no hourly capture; unknown health is not Good")}</small>
       </div>
     </article>
   );
@@ -1484,6 +1496,7 @@ function CompressorHealthMap({ devices, openDetail, openAll }) {
         <span className="good">{t("GOOD")}</span><span className="warning">{t("WARNING")}</span><span className="repair">{t("REPAIR NOW")}</span>
         {rows.some(row => row.modules.some(module => displayModuleStatus(module) === "UNDER_MAINTENANCE")) && <span className="repairing">{t("REPAIRING")}</span>}
         <span className="no-data">{t("No data")}</span><span className="offline">{t("Offline")}</span>
+        <span className="no-data">{t("Not evaluated")}</span>
       </div>
       <p className="compressor-map-key">{t("Grey: Offline after 30 minutes without signal")}</p>
       {!rows.length ? <Empty>{t("No compressor modules available")}</Empty> : (
@@ -1595,7 +1608,7 @@ function VacuumAttentionList({ devices, openDetail, openAll }) {
             >
               <span className="vacuum-machine"><strong>{machineTitle(device)}</strong><small>{module.module_name}</small></span>
               <StatusBadge value={status} />
-              <span className={cls("vacuum-vibration", status)}><Activity size={15} />{module.vibration == null ? "—" : `${n(module.vibration, 1)} mm/s`}</span>
+              <span className={cls("vacuum-vibration", status)}><Activity size={15} />{module.vibration == null ? "—" : `${n(module.vibration, 1)} G rms`}</span>
               <ChevronRight size={15} aria-hidden="true" />
             </button>
           ))}
@@ -2549,8 +2562,8 @@ function Admin(props) {
               <label>{t("Temp Critical (°C)")}<input name="temperature_critical" type="number" step="0.1" defaultValue={tv("temperature_c", "critical", 80)} required /></label>
               <label>{t("Current Warning (A)")}<input name="current_warning" type="number" step="0.01" defaultValue={tv("current_a", "warning", 10)} required /></label>
               <label>{t("Current Critical (A)")}<input name="current_critical" type="number" step="0.01" defaultValue={tv("current_a", "critical", 15)} required /></label>
-              <label>{t("Vibration Warning (mm/s)")}<input name="vibration_warning" type="number" step="0.01" defaultValue={tv("vibration", "warning", 1.8)} required /></label>
-              <label>{t("Vibration Critical (mm/s)")}<input name="vibration_critical" type="number" step="0.01" defaultValue={tv("vibration", "critical", 2.8)} required /></label>
+              <label>{t("Vibration Warning (G rms)")}<input name="vibration_warning" type="number" step="0.01" defaultValue={tv("vibration", "warning", 1.8)} required /></label>
+              <label>{t("Vibration Critical (G rms)")}<input name="vibration_critical" type="number" step="0.01" defaultValue={tv("vibration", "critical", 2.8)} required /></label>
               <div className="full threshold-status"><StatusBadge value={thresholdModule.status || "OFFLINE"} /></div>
               <LoadingButton className="primary-btn full" busy={busy["threshold:save"]} busyText={t("Saving")} icon={Save} type="submit">{t("Save Threshold Config")}</LoadingButton>
             </>
@@ -2904,9 +2917,18 @@ function Detail({ device, module, setModuleId, close, history, telemetry, alerts
       </div>
       <div className="detail-grid" aria-busy={currentTelemetry.loading}>
         <article className="panel condition-panel">
-          <div className="panel-head"><h3>{t(compressorModule ? "ML Condition" : "Vacuum Rule Status")}</h3><StatusBadge value={compressorModule && !compressorHealthAvailable ? "AWAITING_ML_SCORE" : module.status} /></div>
+          <div className="panel-head"><h3>{t(compressorModule ? "ML Condition" : "Vacuum Rule Status")}</h3><StatusBadge value={compressorModule && !compressorHealthAvailable && !module.operation_pull_enabled ? "AWAITING_ML_SCORE" : module.status} /></div>
           {compressorModule ? (
-            compressorHealthAvailable ? (
+            module.operation_pull_enabled ? (
+              <div className="context-condition-body">
+                <div><span className="eyebrow">{module.operation_result_fresh === false ? t("No recent Operation result") : module.operation_mode === "DETECTOR_LIVE" ? t("Frozen Active Context") : t("Shadow evidence · not voting")}</span>
+                <strong>{t(conditionLabel(module.status))}</strong>
+                <p>{t(module.ai_condition || "Awaiting Operation result")}</p>
+                {module.operation_evidence && <p>{module.operation_evidence.feature}: {n(module.operation_evidence.delta, 2)} {module.operation_evidence.unit}</p>}
+                <small>{t("Result at")}: {dateText(module.health_score_at)}</small>
+                <p className="calibration-note">{t("No synthetic Health Score; unsupported states are not evaluated.")}</p></div>
+              </div>
+            ) : compressorHealthAvailable ? (
               <div className="condition-body">
                 <ScoreRing score={module.health_score} />
                 <div>
@@ -2969,7 +2991,7 @@ function Detail({ device, module, setModuleId, close, history, telemetry, alerts
                 { key: "lp_2nd", label: "LP 2nd" },
               ], "Pressure", true, module)}
             />
-            <TrendInsight title="HP2 Trend Summary" rows={dynamicMetricRows(filteredMetricRows)} metric="hp_2nd" unit="source units" />
+            <TrendInsight title="HP2 Trend Summary" rows={dynamicMetricRows(filteredMetricRows)} metric="hp_2nd" unit="source units" method={module.operation_pull_enabled ? "Frozen Context assessment" : "ML Health Score"} />
             <TrendPanel
               unavailable={chartUnavailable}
               title="Thermal Operating Band (Temp Hi & Temp Lo)"
@@ -3007,12 +3029,9 @@ function Detail({ device, module, setModuleId, close, history, telemetry, alerts
             />
             <TrendPanel
               unavailable={chartUnavailable}
-              title="Differential Temperature (Temp Hi vs Temp Lo)"
-              note="Thermal differential spread between high and low sides"
-              option={dynamicMetricTrend(filteredMetricRows, [
-                { key: "temperature_hi", label: "Temp High" },
-                { key: "temperature_lo", label: "Temp Low" },
-              ], "Temperature °C", true, module)}
+              title="SV & Busy States"
+              note="Observed control states: 1 = ON, 0 = OFF; gaps = unknown"
+              option={controlStateOption(dynamicMetricRows(filteredMetricRows))}
             />
             <CorrelationPanel data={correlationData} unavailable={chartUnavailable} />
             <RelationshipPanel data={relationshipData} unavailable={chartUnavailable} relationship={relationship} setRelationship={setRelationship} />
@@ -3024,10 +3043,10 @@ function Detail({ device, module, setModuleId, close, history, telemetry, alerts
               unavailable={chartUnavailable}
               feedback={chartFeedback}
               title="Vacuum Pump Operating Overview"
-              note="Temperature, motor current, vibration, and estimated pressure over time"
+              note="Motor current, vibration, and estimated pressure over time"
               option={vacuumCharts.overview}
             />
-            <TrendPanel unavailable={chartUnavailable} title="Temperature & Estimated Pressure" note="Pressure is calculated from vibration; no pressure sensor is installed" option={vacuumCharts.thermal} />
+            <TrendPanel unavailable={chartUnavailable} title="Estimated Pressure" note="Pressure is calculated from vibration; no pressure sensor is installed" option={vacuumCharts.thermal} />
             <TrendPanel unavailable={chartUnavailable} title="Motor Current" note="Electrical load and operating stability" option={vacuumCharts.current} />
             <TrendPanel unavailable={chartUnavailable} className="full-span" title="Vibration & 3-Axis Acceleration" note="Mechanical vibration with X, Y, and Z acceleration" option={vacuumCharts.vibration} />
           </>
@@ -3045,14 +3064,14 @@ function Detail({ device, module, setModuleId, close, history, telemetry, alerts
   );
 }
 
-function TrendInsight({ title, rows, metric, unit }) {
+function TrendInsight({ title, rows, metric, unit, method }) {
   const t = useT();
   const values = rows.map((row) => sensorNumber(row[metric])).filter(Number.isFinite);
   const current = values.at(-1);
   const first = values[0];
   const delta = Number.isFinite(current) && Number.isFinite(first) ? current - first : null;
   const direction = delta === null ? "No data" : Math.abs(delta) < 0.01 ? "Stable" : delta > 0 ? "Increasing" : "Decreasing";
-  return <article className="panel trend-insight"><span className="eyebrow">{t("Evidence summary")}</span><h3>{t(title)}</h3><div className="trend-insight-values"><div><small>{t("Current")}</small><strong>{Number.isFinite(current) ? n(current, 1) : "--"}</strong><span>{unit}</span></div><div><small>{t("Window change")}</small><strong className={delta > 0 ? "trend-up" : delta < 0 ? "trend-down" : ""}>{delta === null ? "--" : `${delta > 0 ? "+" : ""}${n(delta, 1)}`}</strong><span>{t(direction)}</span></div><div><small>{t("Condition method")}</small><strong>{t("ML Health Score")}</strong><span>{t("No rule threshold")}</span></div></div></article>;
+  return <article className="panel trend-insight"><span className="eyebrow">{t("Evidence summary")}</span><h3>{t(title)}</h3><div className="trend-insight-values"><div><small>{t("Current")}</small><strong>{Number.isFinite(current) ? n(current, 1) : "--"}</strong><span>{unit}</span></div><div><small>{t("Window change")}</small><strong className={delta > 0 ? "trend-up" : delta < 0 ? "trend-down" : ""}>{delta === null ? "--" : `${delta > 0 ? "+" : ""}${n(delta, 1)}`}</strong><span>{t(direction)}</span></div><div><small>{t("Condition method")}</small><strong>{t(method)}</strong><span>{t("No rule threshold")}</span></div></div></article>;
 }
 
 function CorrelationPanel({ data, unavailable }) {
@@ -3187,7 +3206,7 @@ function buildDynamicMetricTrend(metricRows, definitions, yAxisName, interactive
   return {
     backgroundColor: "transparent",
     animation: false,
-    color: visibleDefinitions.map((_, idx) => harmonicColors[idx % harmonicColors.length]),
+    color: visibleDefinitions.map((definition, idx) => PRESSURE_COLORS[definition.key] || harmonicColors[idx % harmonicColors.length]),
     tooltip: {
       trigger: "axis",
       confine: true,
@@ -3236,7 +3255,7 @@ function buildDynamicMetricTrend(metricRows, definitions, yAxisName, interactive
       splitLine: { lineStyle: { color: CHART_GRID, type: "dashed", opacity: 0.75 } },
     },
     series: visibleDefinitions.map((definition, index) => {
-      const seriesColor = harmonicColors[index % harmonicColors.length];
+      const seriesColor = PRESSURE_COLORS[definition.key] || harmonicColors[index % harmonicColors.length];
       return {
         name: definition.label,
         type: "line",
@@ -3247,7 +3266,7 @@ function buildDynamicMetricTrend(metricRows, definitions, yAxisName, interactive
         smooth: definition.step ? false : 0.25,
         step: definition.step,
         connectNulls: false,
-        lineStyle: { width: index === 0 ? 2.5 : 2.0, color: seriesColor },
+        lineStyle: { width: index === 0 ? 2.5 : 2.0, color: seriesColor, type: definition.key.startsWith("lp_") ? "dashed" : "solid" },
         itemStyle: { color: seriesColor },
         areaStyle: definition.area ? { color: seriesColor, opacity: 0.12 } : undefined,
         emphasis: { focus: "series", lineStyle: { width: 3.5 } },
@@ -3315,7 +3334,7 @@ function vacuumVibrationGauge(rawValue, rawPressure) {
   return {
     key: "vibration",
     label: "Vibration",
-    unit: "mm/s",
+    unit: "G rms",
     value: valid ? n(value, 2) : "--",
     percent: valid ? (value / 2.2) * 100 : 0,
     tone: valid ? state.tone : "offline",
@@ -3418,39 +3437,25 @@ function baseAxis(labels) {
 }
 
 function overviewTrend(rows, thresholds) {
-  const labels = rows.map((r) => new Date(r.recorded_at).toLocaleTimeString());
-  const tempMarks = thresholdMarkings(thresholds, "temperature_c");
-  const vibMarks = thresholdMarkings(thresholds, "vibration");
+  const labels = rows.map(r => new Date(r.recorded_at).toLocaleTimeString());
+  const pAxis = pressureAxis(rows.map(r => r.pressure_kpa));
   return {
-    ...baseAxis(labels),
-    color: [COLOR_TEAL, COLOR_WARN, COLOR_BLUE, COLOR_DANGER],
-    yAxis: [
-      { type: "value", name: "Sensor", nameTextStyle: { color: CHART_AXIS }, axisLabel: { color: CHART_AXIS }, splitLine: { lineStyle: { color: CHART_GRID } } },
-      { type: "value", name: "Pressure", nameTextStyle: { color: CHART_AXIS }, axisLabel: { color: CHART_AXIS }, splitLine: { show: false } },
+    ...baseAxis(labels), color:[COLOR_BLUE,COLOR_WARN,COLOR_TEAL],
+    grid:{left:65,right:125,top:55,bottom:66},
+    yAxis:[
+      {type:"value",name:"Current (A)",min:0,scale:true,axisLabel:{color:CHART_AXIS},splitLine:{lineStyle:{color:CHART_GRID}}},
+      {type:"value",name:"Vibration (G rms)",position:"right",scale:true,axisLabel:{color:CHART_AXIS},splitLine:{show:false}},
+      {...pAxis,name:"Est. pressure (kPa)",nameLocation:"middle",nameGap:38,nameRotate:90,nameTextStyle:{color:CHART_AXIS},position:"right",offset:65,axisLabel:{color:CHART_AXIS},splitLine:{show:false}},
     ],
-    series: [
-      { ...line("Temp C", rows.map((r) => r.temperature_c)), ...tempMarks },
-      line("Current A", rows.map((r) => r.current_a)),
-      { ...line("Vibration", rows.map((r) => r.vibration)), ...vibMarks },
-      line("Pressure kPa", rows.map((r) => r.pressure_kpa), 1),
-    ],
+    series:[line("Current A",rows.map(r=>r.current_a)),line("Vibration G rms",rows.map(r=>r.vibration),1),line("Estimated pressure kPa",rows.map(r=>r.pressure_kpa),2)]
   };
 }
 
-function thermalTrend(rows, thresholds) {
-  const labels = rows.map((r) => new Date(r.recorded_at).toLocaleTimeString());
-  const tempMarks = thresholdMarkings(thresholds, "temperature_c");
+function thermalTrend(rows) {
   return {
-    ...baseAxis(labels),
-    color: [COLOR_TEAL, COLOR_DANGER],
-    yAxis: [
-      { type: "value", name: "Temp C", nameTextStyle: { color: CHART_AXIS }, axisLabel: { color: CHART_AXIS }, splitLine: { lineStyle: { color: CHART_GRID } } },
-      { type: "value", name: "Pressure kPa", nameTextStyle: { color: CHART_AXIS }, axisLabel: { color: CHART_AXIS }, splitLine: { show: false } },
-    ],
-    series: [
-      { ...line("Temperature", rows.map((r) => r.temperature_c)), ...tempMarks },
-      line("Pressure", rows.map((r) => r.pressure_kpa), 1),
-    ],
+    ...baseAxis(rows.map(r=>new Date(r.recorded_at).toLocaleTimeString())),color:[COLOR_TEAL],
+    yAxis:{...pressureAxis(rows.map(r=>r.pressure_kpa)),name:"kPa",nameTextStyle:{color:CHART_AXIS},axisLabel:{color:CHART_AXIS},splitLine:{lineStyle:{color:CHART_GRID}}},
+    series:[line("Estimated pressure kPa",rows.map(r=>r.pressure_kpa))]
   };
 }
 
@@ -3473,7 +3478,7 @@ function vibrationTrend(rows, thresholds) {
     color: [COLOR_BLUE, COLOR_DANGER, COLOR_TEAL, COLOR_WARN],
     yAxis: { type: "value", axisLabel: { color: CHART_AXIS }, splitLine: { lineStyle: { color: CHART_GRID } } },
     series: [
-      { ...line("Vibration", rows.map((r) => r.vibration)), ...vibMarks },
+      { ...line("Vibration G rms", rows.map((r) => r.vibration)), ...vibMarks },
       line("Ax", rows.map((r) => r.accel_x)),
       line("Ay", rows.map((r) => r.accel_y)),
       line("Az", rows.map((r) => r.accel_z)),
@@ -3516,6 +3521,7 @@ function severityRank(status) {
 }
 
 function statusColor(status) {
+  if (status === "NOT_EVALUATED" || status === "OFFLINE") return COLOR_OFFLINE;
   if (status === "MAINTENANCE_REQUIRED") return COLOR_DANGER;
   if (status === "UNDER_MAINTENANCE") return COLOR_BLUE;
   if (status === "MONITORING") return COLOR_GOOD;

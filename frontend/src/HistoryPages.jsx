@@ -52,9 +52,9 @@ function chartOption(series, results, metric) {
     grid: { left: 16, right: 18, top: 55, bottom: 78, containLabel: true },
     dataZoom: [{ type: "inside" }, { type: "slider", bottom: 8, height: 18, labelFormatter: timeLabel }],
     xAxis: { type: "time", splitNumber: 3, axisLabel: { color: "#98a6af", fontSize: 11, hideOverlap: true, formatter: timeLabel }, axisLine: { lineStyle: { color: "#293034" } } },
-    yAxis: { type: "value", scale: true, name: metric.unit, nameTextStyle: { color: "#98a6af" }, axisLabel: { color: "#98a6af", hideOverlap: true }, splitLine: { lineStyle: { color: "#293034" } } },
+    yAxis: { type: "value", scale: true, ...(['busy','sv'].includes(metric.key) ? {min:0,max:1,interval:1} : {}), name: metric.unit, nameTextStyle: { color: "#98a6af" }, axisLabel: { color: "#98a6af", hideOverlap: true }, splitLine: { lineStyle: { color: "#293034" } } },
     series: matching.map(item => ({ name: `${machineName(item.device)} · ${item.module.module_name}`, type: "line", connectNulls: false, showSymbol: false, smooth: false,
-      step: metric.key === "busy" ? "end" : undefined,
+      step: ['busy','sv'].includes(metric.key) ? "end" : undefined,
       data: (results[item.key]?.rows || []).map(row => [sourceTime(row.recorded_at), numeric(row[metric.key])]),
     })),
   };

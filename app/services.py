@@ -5,6 +5,7 @@ import json
 import random
 import re
 import threading
+from functools import wraps
 from datetime import datetime, timedelta
 from typing import Any
 from zoneinfo import ZoneInfo
@@ -31,6 +32,21 @@ CONDITION_RANK = {
 
 VALID_MODULE_STATUSES = {"NORMAL", "WARNING", "MAINTENANCE_REQUIRED", "UNDER_MAINTENANCE", "OFFLINE"}
 
+_shared_read_locks = {key: threading.RLock() for key in ("devices", "summary")}
+
+def coalesced_read(key):
+    """Only one metadata query fills an expired shared snapshot at a time."""
+    def decorate(function):
+        @wraps(function)
+        def read(*args, **kwargs):
+            value=cache.get(key)
+            if value is not None:return value
+            with _shared_read_locks[key]:
+                value=cache.get(key)
+                return value if value is not None else function(*args, **kwargs)
+        return read
+    return decorate
+
 METADATA_KEYS = {
     "device_id",
     "deviceId",
@@ -55,7 +71,7 @@ DEFAULT_UNITS = {
     "pressure_kpa": "kPa",
     "current": "A",
     "current_a": "A",
-    "vibration": "mm/s",
+    "vibration": "G rms",
     "ax": "g",
     "ay": "g",
     "az": "g",
@@ -602,6 +618,24 @@ def register_external_sample(sample: ExternalTelemetrySample) -> dict[str, Any]:
     diagnostic_id = insert_diagnostic(device_id, module_id, diagnostic) if diagnostic else None
     if diagnostic_id and not is_suppressed:
         insert_alerts(device_id, module_id, diagnostic_id, diagnostic.get("alerts", []), sample_time=sample.recorded_at)
+    from .operation_pull import operation_pull
+    if operation_pull.status['enabled']:
+        from .health_history import record_state
+        state_payload = {}
+        if sample.source == 'compressor':
+            latest = fetch_one('SELECT * FROM pm_operation_latest WHERE module_id=%s', (module_id,))
+            fresh = latest and 0 <= (sample.recorded_at-latest['occurred_at']).total_seconds() <= 600
+            diagnostic_status = latest['status'] if fresh else 'NOT_EVALUATED'
+            state_payload = json_loads(latest['payload_json'], {}) if latest else {}
+        with connection() as state_conn:
+            state_conn.begin()
+            try:
+                with state_conn.cursor() as state_cur:
+                    record_state(state_cur,module_id=module_id,source=sample.source,at=sample.recorded_at,
+                        status="UNDER_MAINTENANCE" if module_before.get("status")=="UNDER_MAINTENANCE" else diagnostic_status,evidence_id=sample.source_id,payload=state_payload,signal_at=sample.recorded_at)
+                state_conn.commit()
+            except Exception:
+                state_conn.rollback();raise
     current_status = module_before.get("status")
     if is_suppressed:
         module_status = "NORMAL"
@@ -609,7 +643,8 @@ def register_external_sample(sample: ExternalTelemetrySample) -> dict[str, Any]:
         module_status = "UNDER_MAINTENANCE"
     else:
         module_status = diagnostic_status
-    execute("UPDATE pm_modules SET status = %s WHERE id = %s", (module_status, module_id))
+    if module_status != "NOT_EVALUATED":
+        execute("UPDATE pm_modules SET status = %s WHERE id = %s AND status <> 'UNDER_MAINTENANCE'", (module_status, module_id))
     device_status = update_device_status(device_id)
     cache.invalidate("devices", "summary")
     return {
@@ -712,6 +747,7 @@ def latest_module_rows() -> list[dict[str, Any]]:
     )
 
 
+@coalesced_read("devices")
 def list_devices() -> list[dict[str, Any]]:
     cached = cache.get("devices")
     if cached is not None:
@@ -797,6 +833,24 @@ def list_devices() -> list[dict[str, Any]]:
                         "health_score_at": None,
                     })
             devices[device_id]["modules"].append(module)
+    from .operation_pull import operation_pull
+    if operation_pull.status['enabled']:
+        op_rows = {r['module_id']:r for r in fetch_all('SELECT * FROM pm_operation_latest')}
+        now = datetime.now(ZoneInfo(settings.app_timezone)).replace(tzinfo=None)
+        for device in devices.values():
+            for module in device['modules']:
+                if module.get('telemetry_source') != 'compressor': continue
+                row = op_rows.get(module['id'])
+                fresh = row and 0 <= (now-row['occurred_at']).total_seconds() <= 600
+                payload = json_loads(row['payload_json'], {}) if row else {}
+                state = row['status'] if fresh else 'NOT_EVALUATED'
+                if device['connection_state'] != 'OFFLINE' and module['status'] != 'UNDER_MAINTENANCE': module['status'] = state
+                module.update(condition_state=state,health_score=None,ai_condition=payload.get('category','AWAITING_OPERATION_RESULT') if fresh else 'No recent Operation result',operation_result_fresh=bool(fresh),operation_pull_enabled=True,
+                    ai_model_version=payload.get('profile_id'),health_score_at=row['occurred_at'] if row else None,
+                    operation_mode=payload.get('mode'),operation_evidence=payload.get('main_evidence'))
+            visible=[m['status'] for m in device['modules']]
+            if device['connection_state'] != 'OFFLINE' and visible:
+                device['status']=max(visible,key=lambda v: {'MAINTENANCE_REQUIRED':5,'WARNING':4,'WATCH':4,'UNDER_MAINTENANCE':3,'NOT_EVALUATED':2,'NORMAL':1,'OFFLINE':0}.get(v,0))
     result = list(devices.values())
     cache.set("devices", result, ttl=3)
     return result
@@ -979,6 +1033,7 @@ def get_metric_history(device_id: int, module_id: int | None = None, limit: int 
     )
 
 
+@coalesced_read("summary")
 def get_summary() -> dict[str, Any]:
     cached = cache.get("summary")
     if cached is not None:
@@ -989,9 +1044,11 @@ def get_summary() -> dict[str, Any]:
         FROM pm_devices d""")
     counts: dict[str, int] = {s: 0 for s in ["NORMAL", "WATCH", "WARNING", "MAINTENANCE_REQUIRED", "UNDER_MAINTENANCE", "OFFLINE"]}
     connection_counts: dict[str, int] = {"ONLINE": 0, "STALE": 0, "NO_SIGNAL": 0, "OFFLINE": 0}
+    from .operation_pull import operation_pull
+    displayed = {d['device_uid']:d['status'] for d in list_devices()} if operation_pull.status['enabled'] else {}
     for row in status_rows:
         signal_state, _ = connection_state(row["last_seen"], row["device_uid"], telemetry_source="compressor" if row.get("has_compressor") else None)
-        status = operational_status(row["status"], signal_state)
+        status = displayed.get(row["device_uid"], operational_status(row["status"], signal_state))
         counts[status] = counts.get(status, 0) + 1
         connection_counts[signal_state] = connection_counts.get(signal_state, 0) + 1
     total = sum(counts.values())
@@ -1013,10 +1070,10 @@ _health_trend_locks = {"7d": threading.Lock()}
 
 
 def get_fleet_health_trend(time_range: str = "7d") -> dict[str, Any]:
-    """Count each module's last diagnostic on each of the last seven DB dates.
+    """Read 168 durable completed-hour module end-state totals.
 
-    Days without a diagnostic stay null rather than carrying old status forward.
-    This reports diagnostic recording time, not source-event freshness.
+    Uncaptured hours stay null. Captured end-state counts use source time and
+    signal freshness, never the receiver's arrival time.
     """
     if time_range not in _health_trend_locks:
         raise HTTPException(status_code=422, detail="range must be 7d")
@@ -1028,46 +1085,8 @@ def get_fleet_health_trend(time_range: str = "7d") -> dict[str, Any]:
         cached = cache.get(key)
         if cached is not None:
             return cached
-        db_time = fetch_one("SELECT NOW() AS db_now")
-        if not db_time or not isinstance(db_time.get("db_now"), datetime):
-            raise RuntimeError("Could not determine database time for health trend")
-        today = db_time["db_now"].date()
-        days = [today - timedelta(days=offset) for offset in range(6, -1, -1)]
-        rows = fetch_all(
-            """
-            SELECT DATE(ds.source_recorded_at) AS day, ds.module_id, ds.condition_state
-            FROM pm_diagnostic_snapshots ds
-            INNER JOIN (
-                SELECT DATE(source_recorded_at) AS day, module_id, MAX(source_recorded_at) AS latest_time
-                FROM pm_diagnostic_snapshots
-                WHERE source_recorded_at >= %s AND source_recorded_at < %s
-                GROUP BY DATE(source_recorded_at), module_id
-            ) latest ON latest.module_id=ds.module_id AND latest.latest_time=ds.source_recorded_at
-            WHERE ds.id=(SELECT MAX(tie.id) FROM pm_diagnostic_snapshots tie
-                WHERE tie.module_id=ds.module_id AND tie.source_recorded_at=ds.source_recorded_at)
-            ORDER BY day, ds.module_id
-            """,
-            (days[0], today + timedelta(days=1)),
-        )
-        counts = {day: {"good": 0, "warning": 0, "repair_now": 0, "observed": 0} for day in days}
-        for row in rows:
-            state = row.get("condition_state")
-            category = {"NORMAL": "good", "WATCH": "warning", "WARNING": "warning", "MAINTENANCE_REQUIRED": "repair_now"}.get(state)
-            if category is None:
-                continue
-            bucket = counts.get(row["day"])
-            if bucket is not None:
-                bucket[category] += 1
-                bucket["observed"] += 1
-        result = {
-            "range": time_range,
-            "source": "pm_diagnostic_snapshots",
-            "time_basis": "source_recorded_at (source clock, not snapshot insert time); legacy NULL excluded",
-            "points": [
-                {"at": day.isoformat(), **{name: value if values["observed"] else None for name, value in values.items() if name != "observed"}, "observed": values["observed"]}
-                for day, values in counts.items()
-            ],
-        }
+        from .health_history import hourly_trend
+        result = hourly_trend(datetime.now(ZoneInfo(settings.app_timezone)).replace(tzinfo=None))
         cache.set(key, result, ttl=60)
         return result
 

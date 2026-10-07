@@ -1,5 +1,6 @@
 // Handler charts and relationships share the same bounded, source-specific rows.
 export const COMPRESSOR_SIGNALS = Object.freeze(["hp_1st", "lp_1st", "hp_2nd", "lp_2nd", "temperature_hi", "temperature_lo", "valve"]);
+export const COMPRESSOR_HISTORY_SIGNALS = Object.freeze([...COMPRESSOR_SIGNALS,"sv","busy"]);
 export const VACUUM_SIGNALS = Object.freeze(["temperature_c", "pressure_kpa", "current_a", "vibration", "accel_x", "accel_y", "accel_z"]);
 
 export function historyRowsEqual(previous, next) {

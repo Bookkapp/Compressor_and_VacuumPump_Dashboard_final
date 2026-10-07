@@ -108,6 +108,18 @@ class Settings:
     compressor_db_user = os.getenv("COMPRESSOR_DB_USER", telemetry_db_user)
     compressor_db_password = os.getenv("COMPRESSOR_DB_PASSWORD", telemetry_db_password)
     telemetry_db_charset = os.getenv("TELEMETRY_DB_CHARSET", "utf8mb4")
+    operation_pull_enabled = env_bool("OPERATION_PULL_ENABLED", False)
+    operation_db_schema = require_safe_identifier(os.getenv("OPERATION_DB_SCHEMA", "ht9046mx_analytics"), "OPERATION_DB_SCHEMA")
+    operation_db_user = os.getenv("OPERATION_DB_USER", compressor_db_user)
+    operation_db_password = os.getenv("OPERATION_DB_PASSWORD", compressor_db_password)
+    operation_pull_interval_seconds = max(2, int(os.getenv("OPERATION_PULL_INTERVAL_SECONDS", "5")))
+    operation_pull_batch_size = max(10, min(2000, int(os.getenv("OPERATION_PULL_BATCH_SIZE", "500"))))
+    operation_pull_alerts_enabled = env_bool("OPERATION_PULL_ALERTS_ENABLED", False)
+    operation_stream_namespace = os.getenv("OPERATION_STREAM_NAMESPACE", "").strip()
+    if operation_stream_namespace:
+        operation_stream_namespace = require_safe_identifier(operation_stream_namespace, "OPERATION_STREAM_NAMESPACE")
+        if len(operation_stream_namespace) > 64:
+            raise ValueError("OPERATION_STREAM_NAMESPACE must be at most 64 characters")
     telemetry_poll_interval_seconds = max(2, int(os.getenv("TELEMETRY_POLL_INTERVAL_SECONDS", "5")))
     telemetry_connect_timeout_seconds = max(1, int(os.getenv("TELEMETRY_CONNECT_TIMEOUT_SECONDS", "10")))
     telemetry_read_timeout_seconds = max(1, int(os.getenv("TELEMETRY_READ_TIMEOUT_SECONDS", "30")))
@@ -132,7 +144,7 @@ class Settings:
     # Optional read-only output contract for the Compressor ML service.  The
     # dashboard never writes this table and shows Awaiting ML Score until the
     # producer/table is enabled by the operator.
-    compressor_health_enabled = env_bool("COMPRESSOR_HEALTH_ENABLED", False)
+    compressor_health_enabled = not operation_pull_enabled and env_bool("COMPRESSOR_HEALTH_ENABLED", False)
     compressor_health_schema = require_safe_identifier(
         os.getenv("COMPRESSOR_HEALTH_SCHEMA", compressor_schema), "COMPRESSOR_HEALTH_SCHEMA"
     )

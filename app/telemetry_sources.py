@@ -411,7 +411,7 @@ class ReadOnlyTelemetrySources:
                     ("accel_x", _number(row.get("accel_x")), "g"),
                     ("accel_y", _number(row.get("accel_y")), "g"),
                     ("accel_z", _number(row.get("accel_z")), "g"),
-                    ("vibration", vibration, "mm/s"),
+                    ("vibration", vibration, "G rms"),
                     ("estimated_pressure_kpa", estimated_pressure, "kPa"),
                 )
                 if value is not None
@@ -464,11 +464,15 @@ class ReadOnlyTelemetrySources:
                     if val is not None:
                         break
                 values[key] = val
-            numeric = {key: _number(value) for key, value in values.items()}
+            def control_number(value):
+                if value is None: return None
+                text=str(value).strip().lower()
+                return 1.0 if text in {'on','true','1'} else 0.0 if text in {'off','false','0'} else None
+            numeric = {key: control_number(value) if key in {'sv','busy'} else _number(value) for key,value in values.items()}
             if not include_empty and not any(numeric[key] is not None for key in ("hp_1st", "lp_1st", "hp_2nd", "lp_2nd", "valve", "temperature_hi", "temperature_lo")):
                 continue
             scale = 0.1 if settings.compressor_sensor_scale == "0.1" else 1.0
-            numeric = {key: value * scale if value is not None and key not in {"valve", "busy"} else value for key, value in numeric.items()}
+            numeric = {key: value * scale if value is not None and key not in {"valve", "busy", "sv"} else value for key, value in numeric.items()}
             metrics: dict[str, tuple[float, str | None]] = {
                 key: (value, None)
                 for key, value in numeric.items()

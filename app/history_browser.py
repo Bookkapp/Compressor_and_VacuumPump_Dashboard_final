@@ -21,7 +21,7 @@ from .db import fetch_one
 from .telemetry_sources import telemetry_sources, _datetime, _identifier
 
 SIGNALS = {
-    "compressor": ("hp_1st", "lp_1st", "hp_2nd", "lp_2nd", "temperature_hi", "temperature_lo", "valve", "busy"),
+    "compressor": ("hp_1st", "lp_1st", "hp_2nd", "lp_2nd", "temperature_hi", "temperature_lo", "valve", "busy", "sv"),
     "vacuum": ("temperature_c", "pressure_kpa", "current_a", "vibration", "accel_x", "accel_y", "accel_z"),
 }
 _cache: OrderedDict = OrderedDict()

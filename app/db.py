@@ -500,6 +500,9 @@ def init_database() -> None:
         with connection() as conn, conn.cursor() as cur:
             for statement in SCHEMA_STATEMENTS:
                 cur.execute(statement)
+            from .health_history import SCHEMA as health_schema
+            for statement in health_schema:
+                cur.execute(statement)
             run_schema_migrations(cur)
 
         seed_users()

@@ -38,7 +38,7 @@ class TelemetrySourceMappingTests(unittest.TestCase):
         self.assertEqual(sample.module_code, "vacuum-pump")
         self.assertEqual(sample.current_a, 3.8)
         self.assertAlmostEqual(sample.pressure_kpa, -73.572, places=3)
-        self.assertEqual(sample.metrics["vibration"], (1.02, "mm/s"))
+        self.assertEqual(sample.metrics["vibration"], (1.02, "G rms"))
         self.assertEqual(sample.metrics["estimated_pressure_kpa"], (-73.572, "kPa"))
         self.assertEqual(sample.recorded_at, datetime(2026, 9, 3, 10, 0, 0))
 
@@ -118,6 +118,7 @@ class TelemetrySourceMappingTests(unittest.TestCase):
         row = sample.history_row(1, 12)
         self.assertEqual(row["hp_1st"], sample.metrics["hp_1st"][0])
         self.assertEqual(row["busy"], 1)
+        self.assertEqual(row["sv"], 0)
         self.assertEqual(row["operating_status"], "On")
         self.assertEqual(row["set_valve_status"], "Off")
         self.assertIsNone(row["accel_x"])

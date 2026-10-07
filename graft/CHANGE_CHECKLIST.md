@@ -1,3 +1,10 @@
+
+## 7 Oct 2026 — one-way Operation delivery and hourly Fleet history
+
+Confirmed topology: Dashboard .69 initiates SELECT to Operation .73:3306 only. Ordered transactional STATUS/EVENT export and Dashboard-owned receipts/cursor replace the reverse bridge. No new browser-owned detector loop; bounded polling/catch-up and shared caches. Shadow/no Active/unsupported states remain NOT_EVALUATED; no invented Health Score/Critical threshold. Hour-end module/fleet snapshots, source-clock state events, 168 hourly points and late-bucket correction now implemented; historical gaps remain null. Compressor stage colours/SV-Busy step plots and shared scaled-pointer handling, Vacuum separate axes/no Temperature/zero-at-bottom/G rms labels delivered. Calibration numeric basis unchanged; true RMS/source calibration basis still requires confirmation.
+
+Verification: 91 Dashboard Python tests, 13 Node tests, production frontend build; companion Operation 264 API tests. Isolated real MySQL rollback/retry/concurrent sequence/restart/outage/source-identity/Alert-policy/hourly correction QA and 10 clients/90 successful HTTP reads (warm p95 1000.84 ms, excluding Server network/browser render). Raw source and real Profile/Active writes: zero. Server update/actual-network acceptance remains pending; deployment/ONE_WAY_MYSQL_UPDATE_20261007.md supersedes the old reverse bridge handoff.
+
 # Change Checklist
 
 ## Compressor signal Online through 30 minutes — 2026-10-06

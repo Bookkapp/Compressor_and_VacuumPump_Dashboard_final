@@ -13,7 +13,8 @@ test("Machine-specific sources include OFF historical modules and exclude unmapp
   assert.deepEqual(machineModules(device).map(item => item.id), [2, 8, 1]);
   assert.deepEqual(machineModules(undefined), []);
   const metrics = metricChoices(machineModules(device).map(module => ({ module })));
-  assert.equal(metrics.length, 15);
+  assert.equal(metrics.length, 16);
+  assert.equal(metrics.filter(item => item.source === "compressor").some(item => item.key === "sv"), true);
   assert.equal(metrics.filter(item => item.source === "compressor").some(item => item.key === "accel_x"), false);
   assert.equal(metrics.filter(item => item.source === "vacuum").some(item => item.key === "hp_1st"), false);
 });

@@ -1341,6 +1341,12 @@ h3 { font-size: 18px; }
   height: 168px;
 }
 
+.context-condition-body { padding: 18px 0; min-width: 0; overflow-wrap: anywhere; }
+.context-condition-body .eyebrow { display: block; margin-bottom: 12px; line-height: 1.5; }
+.context-condition-body strong { display: block; font-size: 24px; }
+.context-condition-body p { line-height: 1.5; }
+.context-condition-body .calibration-note { max-width: none; }
+
 .fleet-bars {
   display: grid;
   gap: 14px;
@@ -4311,3 +4317,5 @@ html[lang="th"] textarea {
   padding-top: 10px;
   border-top: 1px dashed var(--line);
 }
+
+.state-badge.NOT_EVALUATED, .module-map-panel .map-cell.NOT_EVALUATED { background: var(--neutral-soft); color: var(--muted); border-color: var(--line); border-top-color: var(--muted); }

@@ -35,8 +35,11 @@ def roundn(value: float | None, digits: int = 3) -> float | None:
 def estimate_vacuum_pressure_kpa(vibration_mm_s: Any) -> float | None:
     """Estimate vacuum pressure from the approved field calibration curve.
 
-    The source does not have a pressure sensor.  The chart supplied for this
-    project defines vibration (mm/s) = -0.0439 * pressure (kPa) - 2.2098.
+    Existing empirical relation V = -0.0439 * pressure (kPa) - 2.2098.
+    Coefficients and input numbers are unchanged by the owner's G rms display
+    correction. The legacy argument name is retained for compatibility; it is
+    not proof of a physical velocity-to-acceleration conversion. The deployed
+    producer's RMS calculation and calibration input units must be verified.
     """
     vibration = n(vibration_mm_s, None)
     if vibration is None:

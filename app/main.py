@@ -96,8 +96,11 @@ async def lifespan(app: FastAPI):
     def register_live_sample(sample) -> None:
         register_external_sample(sample)
 
+    from .operation_pull import operation_pull
     telemetry_poller.start(register_live_sample, on_cycle=_broadcast_current_state)
+    operation_pull.start(on_change=_broadcast_current_state)
     yield
+    operation_pull.stop()
     telemetry_poller.stop()
 
 
@@ -184,6 +187,7 @@ def db_status():
             "db_host": settings.db_host,
             "db_port": settings.db_port,
             "telemetry": telemetry_sources.status(),
+            "operation_pull": __import__("app.operation_pull", fromlist=["operation_pull"]).operation_pull.status,
         }
     except Exception as exc:
         return {
@@ -305,7 +309,7 @@ def devices_history(
 ):
     if signals is None:
         return get_history(device_id, module_id=module_id, limit=limit, since=since)
-    allowed = {"hp_1st", "lp_1st", "hp_2nd", "lp_2nd", "temperature_hi", "temperature_lo", "valve", "busy", "temperature_c", "pressure_kpa", "current_a", "vibration", "accel_x", "accel_y", "accel_z"}
+    allowed = {"hp_1st", "lp_1st", "hp_2nd", "lp_2nd", "temperature_hi", "temperature_lo", "valve", "busy", "sv", "temperature_c", "pressure_kpa", "current_a", "vibration", "accel_x", "accel_y", "accel_z"}
     selected = list(dict.fromkeys(signals.split(",")))
     if not module_id or not selected or any(key not in allowed for key in selected):
         raise HTTPException(status_code=422, detail="Select one module and valid sensor signals")

@@ -43,3 +43,19 @@ class OfflineStatusTests(TestCase):
         self.assertEqual(device['modules'][0]['condition_state'], 'NORMAL')
         self.assertEqual(device['modules'][0]['health_score'], 99)
         self.assertEqual(row['module_status'], 'NORMAL')
+
+    def test_reconnected_compressor_without_operation_result_is_not_good_or_offline(self):
+        row = dict.fromkeys(('location', 'thresholds_json', 'health_score_24h_baseline', 'temperature_c', 'pressure_kpa', 'current_a', 'vibration', 'ai_model_version', 'ai_condition', 'ai_confidence', 'ai_notes', 'diagnostic_at'))
+        row.update(device_id=1,device_uid='compressor:001',machine_code='001',display_name='001',device_status='OFFLINE',
+            last_seen=datetime.now(),module_id=11,module_code='compressor-m1',module_name='M1',module_type='Compressor',
+            telemetry_source='compressor',source_device_key='001',module_status='OFFLINE',condition_state='NORMAL',health_score=99)
+        with patch('app.services.latest_module_rows',return_value=[row]), patch('app.services.fetch_all',return_value=[]), \
+            patch('app.services.telemetry_sources.latest_for',return_value=None), patch('app.services.telemetry_sources.health_for',return_value=None), \
+            patch.dict('app.operation_pull.operation_pull.status',{'enabled':True}):
+            device=list_devices()[0]
+        self.assertEqual(device['status'],'NOT_EVALUATED')
+        self.assertEqual(device['connection_state'],'ONLINE')
+        self.assertEqual(device['modules'][0]['status'],'NOT_EVALUATED')
+        self.assertIsNone(device['modules'][0]['health_score'])
+        self.assertTrue(device['modules'][0]['operation_pull_enabled'])
+        self.assertFalse(device['modules'][0]['operation_result_fresh'])

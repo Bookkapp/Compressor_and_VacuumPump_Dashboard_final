@@ -1,6 +1,19 @@
 export const LANGUAGE_KEY = "adi_language";
 
 const TH = {
+  "Not evaluated": "ยังไม่ได้ประเมิน",
+  "No recent Operation result": "ยังไม่มีผลวิเคราะห์ล่าสุดจาก Operation",
+  "NOT EVALUATED": "ยังไม่ได้ประเมิน",
+  "Frozen Active Context": "ผลจาก Active Profile ที่ตรึงไว้",
+  "Shadow evidence · not voting": "หลักฐาน Shadow · ยังไม่ใช้ตัดสินสถานะ",
+  "Result at": "เวลาของผลวิเคราะห์",
+  "Awaiting Operation result": "รอผลจาก Operation",
+  "No synthetic Health Score; unsupported states are not evaluated.": "ไม่สร้าง Health Score สมมติ · ไม่ประเมิน State ที่ Reference ไม่รองรับ",
+  "Module status at each completed hour · last 7 days": "สถานะโมดูล ณ สิ้นแต่ละชั่วโมง · ย้อนหลัง 7 วัน",
+  "Gaps mean no hourly capture; unknown health is not Good": "ช่วงว่างคือยังไม่มีบันทึกรายชั่วโมง · ไม่มีผลประเมินไม่เท่ากับ Good",
+  "SV & Busy States": "สถานะ SV และ Busy",
+  "Observed control states: 1 = ON, 0 = OFF; gaps = unknown": "สถานะที่บันทึกจริง: 1 = ON, 0 = OFF · ช่วงว่างคือไม่ทราบค่า",
+  "Motor current, vibration, and estimated pressure over time": "กระแสมอเตอร์ การสั่น และแรงดันประมาณค่าตามเวลา",
   "Historical Charts": "กราฟย้อนหลัง",
   "Charts show up to 1,200 newest readings. Choose dates to inspect older periods.": "กราฟแสดงได้สูงสุด 1,200 ตัวอย่างล่าสุด เลือกวันเวลาเพื่อดูช่วงที่เก่ากว่านี้",
   "Date and time": "วันและเวลา",
@@ -147,7 +160,7 @@ const TH = {
   "No open work orders": "ไม่มีใบสั่งงานที่เปิดอยู่", "Maintenance task": "งานบำรุงรักษา", "No active alerts": "ไม่มีการแจ้งเตือนที่ยังไม่รับทราบ",
   "Temp Warning (°C)": "อุณหภูมิเตือน (°C)", "Temp Critical (°C)": "อุณหภูมิวิกฤต (°C)",
   "Current Warning (A)": "กระแสเตือน (A)", "Current Critical (A)": "กระแสวิกฤต (A)",
-  "Vibration Warning (mm/s)": "การสั่นเตือน (mm/s)", "Vibration Critical (mm/s)": "การสั่นวิกฤต (mm/s)",
+  "Vibration Warning (G rms)": "การสั่นเตือน (G rms)", "Vibration Critical (G rms)": "การสั่นวิกฤต (G rms)",
   "Runtime health for deployment checks and live troubleshooting.": "สถานะการทำงานสำหรับตรวจระบบและแก้ปัญหา",
   "Loading production status": "กำลังโหลดสถานะระบบ", "Connected": "เชื่อมต่อแล้ว", "Reading": "กำลังอ่านข้อมูล",
   "Not configured": "ยังไม่ตั้งค่า", "Unavailable": "ไม่พร้อมใช้งาน", "Disabled": "ปิดใช้งาน",
