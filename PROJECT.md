@@ -2,6 +2,18 @@
 
 # Project — ADI Predictive Maintenance Dashboard
 
+## Compressor Online window — 2026-10-06
+
+Owner requested Compressor Handler signal stay Online through 30 minutes since the last real reading, replacing the former 20–30 minute No signal interval. More than 30 minutes remains Offline; missing timestamps remain Offline and Vacuum policy is unchanged. Shared connection state keeps Handler, summaries and overview consistent. Boundary tests updated; validation and installed API acceptance recorded in deployment/SERVER_ACCEPTANCE.md.
+
+Actual Handler IDs are canonical `HT9046MX-...`, so Compressor cadence now uses stored module source membership in list/summary APIs rather than relying on a `compressor:` ID prefix. Mixed Handlers containing Compressor modules use that Handler cadence; pure Vacuum retains its own policy.
+
+## Server .69 portable setup — 2026-10-06
+
+Owner requested setup, then an alternative without elevation. Dashboard/MySQL/nginx now run under a hidden user-task supervisor; verified separate SELECT-only accounts read Compressor and Vacuum. Owner supplied the Vacuum username; configured its actual `device_id` column. Discovered 21 Handlers/162 modules (160 Compressor, two Vacuum). Both logins, proxy WebSocket, concurrent API histories and API restart recovery passed. Added Windows timezone/development dependencies, metadata backup and setup/check scripts. 70 unittest / 82 pytest tests and production build passed. Browser/remote LAN verification and boot-before-login remain pending; Operation was not changed. See [actual Server acceptance](deployment/SERVER_ACCEPTANCE.md).
+
+Historical page/chart APIs also return distinct real-source fields for both families. Vacuum mapping regression now verifies both configurable identity column names independently of Server `.env`; final suites pass with the deployed configuration.
+
 ## Log page scrolling & viewport height fix — 2026-10-06
 
 - Fixed unnatural jitter / bounce and sticky sidebar detachment on short pages (especially Data Logs `#logs`): removed unzoomed `body` from `min-height: calc(100vh / var(--dashboard-scale))` in `frontend/src/styles.css` (keeping it scoped strictly to `.app-shell, .login-shell`), eliminating a 79px phantom scroll overflow under 90% dashboard zoom.

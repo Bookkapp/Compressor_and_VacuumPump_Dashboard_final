@@ -2,6 +2,18 @@
 
 # Roadmap
 
+## Server installation phase — 2026-10-06
+
+- [x] Install portable .69 Dashboard, dedicated local metadata MySQL and nginx proxy without elevation at owner's request.
+- [x] User-login scheduled supervisor, API restart/backoff, rotating logs and scheduled metadata-only backup.
+- [x] Verify Compressor SELECT-only reads, real account logins, proxy WebSocket, concurrent API histories, Python suites and frontend build.
+- [x] Vacuum SELECT account from .69 and actual `device_id` mapping; both source reads and API histories pass.
+- [ ] Actual two-source/browser UAT and external LAN ingress.
+- [ ] Boot-before-login service/task, reboot and sustained source/load acceptance.
+- [ ] Operation .73 installation/acceptance and real eligible Profile approval through its own workflow.
+
+Both sources now read successfully; full production acceptance still requires the checks above. Evidence: [SERVER_ACCEPTANCE.md](deployment/SERVER_ACCEPTANCE.md).
+
 
 
 ## Numbering reset & Vacuum Pump tooltip — 2026-10-06
@@ -199,4 +211,3 @@ Guide: `docs/DETECTOR_EVIDENCE_INTEGRATION.md` and sibling Operation Server runb
 - Next: run staging contract tests against `10.195.17.73`, close the cross-repository Compressor score-schema debt, then complete security/UAT/rollback gates before Server deployment.
 
 - DBA/server owner must create least-privilege accounts and populate on-host secrets from the ignored handoff before the staging run; credentials in a local file are not proof of connectivity or authority.
-

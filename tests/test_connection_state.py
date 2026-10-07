@@ -10,16 +10,22 @@ class ConnectionStateTests(unittest.TestCase):
     def state(self, seconds, device='compressor:115'):
         return connection_state(self.now - timedelta(seconds=seconds), device, now=self.now)[0]
 
-    def test_compressor_no_signal_window_precedes_offline(self):
+    def test_compressor_online_through_thirty_minutes_then_offline(self):
         self.assertEqual(self.state(20*60), 'ONLINE')
-        self.assertEqual(self.state(20*60+1), 'NO_SIGNAL')
-        self.assertEqual(self.state(30*60), 'NO_SIGNAL')
+        self.assertEqual(self.state(20*60+1), 'ONLINE')
+        self.assertEqual(self.state(30*60-1), 'ONLINE')
+        self.assertEqual(self.state(30*60), 'ONLINE')
         self.assertEqual(self.state(30*60+.1), 'OFFLINE')
 
     def test_vacuum_stale_window_then_no_signal_then_offline(self):
         for seconds, expected in [(15, 'ONLINE'), (30, 'STALE'), (90, 'STALE'), (91, 'NO_SIGNAL'), (1800, 'NO_SIGNAL'), (1801, 'OFFLINE')]:
             with self.subTest(seconds=seconds):
                 self.assertEqual(self.state(seconds, 'vacuum:VP-07'), expected)
+
+    def test_actual_handler_identity_uses_explicit_source_mapping(self):
+        at = self.now - timedelta(minutes=25)
+        self.assertEqual(connection_state(at, 'HT9046MX-017', now=self.now, telemetry_source='compressor')[0], 'ONLINE')
+        self.assertEqual(connection_state(at, 'HT9046MX-017', now=self.now, telemetry_source='vacuum')[0], 'NO_SIGNAL')
 
     def test_disconnected_condition_never_looks_good_and_recovers_without_write(self):
         for condition in ('NORMAL', 'WARNING', 'MAINTENANCE_REQUIRED', 'UNDER_MAINTENANCE'):

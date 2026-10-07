@@ -1,5 +1,24 @@
 # Change Checklist
 
+## Compressor signal Online through 30 minutes — 2026-10-06
+
+- [x] Owner-requested removal of Compressor 20–30 minute NO_SIGNAL state in shared connection policy.
+- [x] Boundary regression covers <=30 minute Online and >30 minute Offline; Vacuum/missing-time rules retained.
+- [x] Real canonical HT9046MX IDs use explicit stored source membership in Handler and summary APIs; source-specific regression prevents treating pure Vacuum as Compressor.
+- [x] Updated PROJECT.md and SOT.md; no phase change or source telemetry mutation. Actual test/build/restart outcomes recorded in deployment/SERVER_ACCEPTANCE.md.
+
+## Actual Server .69 portable setup — 2026-10-06
+
+- [x] Read HANDOFF_SERVER first; inspected actual .69 hostname/IP/OS/timezone/listeners/tasks and preserved existing HT9046MX configuration.
+- [x] Python 3.12 venv, locked npm install/build; fixed missing Windows tzdata and separate httpx/pytest test requirements.
+- [x] New loopback metadata MySQL/dedicated schema account, private original config backup, nginx /api and /ws proxy, hidden per-user supervisor and local metadata-only scheduled backups.
+- [x] Verified SELECT-only Compressor source access; real login and proxy WebSocket, eight concurrent histories and API restart recovery; no source writes/Operation/Profile/model changes.
+- [x] 70 unittest and 82 pytest tests passed; production frontend build passed; deployed API evidence stored privately in ignored runtime.
+- [x] Owner-supplied Vacuum username verified with prepared private password; SELECT-only table grant and actual `device_id` mapping confirmed; both sources read and ten concurrent histories pass.
+- [x] Historical page/chart APIs pass for both source families; Vacuum test covers both configurable identity columns, Estimated Pressure and null preservation. Final 70 unittest / 82 pytest / 19 subtests passed with current Server `.env`; final frontend build passed.
+- [ ] Actual browser/remote LAN checks, reboot/boot-before-login and sustained load. Browser launch was blocked by automatic approval review; Windows denied noninteractive boot task.
+- [x] Updated PROJECT/SOT/ROADMAP and deployment/SERVER_ACCEPTANCE.md with actual partial deployment status and limitations.
+
 ## Log page scrolling & viewport height fix — 2026-10-06
 
 - [x] Removed `body` from `min-height: calc(100vh / var(--dashboard-scale))` in `frontend/src/styles.css` (keeping it scoped strictly to `.app-shell, .login-shell`), eliminating a 79px phantom body overflow caused by unzoomed `body` having `111.11vh` min-height.

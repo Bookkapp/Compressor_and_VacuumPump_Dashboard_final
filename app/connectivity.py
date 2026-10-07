@@ -4,11 +4,10 @@ from datetime import datetime
 from typing import Any
 
 
-COMPRESSOR_NO_SIGNAL_SECONDS = 20 * 60
 OFFLINE_AFTER_SECONDS = 30 * 60
 
 
-def connection_state(last_seen: Any, device_uid: str | None = None, *, now: datetime | None = None) -> tuple[str, int | None]:
+def connection_state(last_seen: Any, device_uid: str | None = None, *, now: datetime | None = None, telemetry_source: str | None = None) -> tuple[str, int | None]:
     if not last_seen:
         return "OFFLINE", None
     if isinstance(last_seen, str):
@@ -24,8 +23,8 @@ def connection_state(last_seen: Any, device_uid: str | None = None, *, now: date
     seconds = int(elapsed)
     if elapsed > OFFLINE_AFTER_SECONDS:
         return "OFFLINE", seconds
-    if str(device_uid or "").lower().startswith("compressor:"):
-        return ("ONLINE" if elapsed <= COMPRESSOR_NO_SIGNAL_SECONDS else "NO_SIGNAL"), seconds
+    if telemetry_source == "compressor" or (telemetry_source is None and str(device_uid or "").lower().startswith("compressor:")):
+        return "ONLINE", seconds
     if elapsed <= 15:
         return "ONLINE", seconds
     if elapsed <= 90:

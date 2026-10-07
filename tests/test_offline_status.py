@@ -27,7 +27,7 @@ class OfflineStatusTests(TestCase):
         self.assertEqual(result['counts']['OFFLINE'], 2)
         self.assertEqual(result['counts']['NORMAL'], 2)
         self.assertEqual(result['counts']['WARNING'], 0)
-        self.assertEqual(result['connection_counts'], {'ONLINE': 1, 'STALE': 0, 'NO_SIGNAL': 1, 'OFFLINE': 2})
+        self.assertEqual(result['connection_counts'], {'ONLINE': 2, 'STALE': 0, 'NO_SIGNAL': 0, 'OFFLINE': 2})
         query.assert_called_once()
 
     def test_device_and_modules_go_offline_preserving_historical_condition(self):

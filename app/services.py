@@ -717,10 +717,11 @@ def list_devices() -> list[dict[str, Any]]:
     if cached is not None:
         return cached
     rows = latest_module_rows()
+    compressor_ids = {row["device_id"] for row in rows if row.get("telemetry_source") == "compressor"}
     devices: dict[int, dict[str, Any]] = {}
     for row in rows:
         device_id = row["device_id"]
-        signal_state, signal_age = connection_state(row["last_seen"], row["device_uid"])
+        signal_state, signal_age = connection_state(row["last_seen"], row["device_uid"], telemetry_source="compressor" if device_id in compressor_ids else None)
         devices.setdefault(
             device_id,
             {
@@ -983,11 +984,13 @@ def get_summary() -> dict[str, Any]:
     if cached is not None:
         return cached
 
-    status_rows = fetch_all("SELECT device_uid, status, last_seen FROM pm_devices")
+    status_rows = fetch_all("""SELECT d.device_uid, d.status, d.last_seen,
+        EXISTS(SELECT 1 FROM pm_modules m WHERE m.device_id=d.id AND m.telemetry_source='compressor') AS has_compressor
+        FROM pm_devices d""")
     counts: dict[str, int] = {s: 0 for s in ["NORMAL", "WATCH", "WARNING", "MAINTENANCE_REQUIRED", "UNDER_MAINTENANCE", "OFFLINE"]}
     connection_counts: dict[str, int] = {"ONLINE": 0, "STALE": 0, "NO_SIGNAL": 0, "OFFLINE": 0}
     for row in status_rows:
-        signal_state, _ = connection_state(row["last_seen"], row["device_uid"])
+        signal_state, _ = connection_state(row["last_seen"], row["device_uid"], telemetry_source="compressor" if row.get("has_compressor") else None)
         status = operational_status(row["status"], signal_state)
         counts[status] = counts.get(status, 0) + 1
         connection_counts[signal_state] = connection_counts.get(signal_state, 0) + 1

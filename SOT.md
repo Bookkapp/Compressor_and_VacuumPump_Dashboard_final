@@ -2,6 +2,18 @@
 
 # Source of Truth
 
+## Compressor signal policy — 2026-10-06
+
+Current owner-approved Compressor policy: actual last-reading age <= 30 minutes is ONLINE, > 30 minutes is OFFLINE; unknown/invalid last-reading time is OFFLINE. The former Compressor NO_SIGNAL interval after 20 minutes is removed. Vacuum freshness thresholds and retained diagnostic conditions remain unchanged. Boundary coverage verifies 20 minutes, 20 minutes + 1 second, just under/exactly/just over 30 minutes.
+
+Handler/source classification uses stored Compressor module membership for canonical HT9046MX identities, including shared Handlers. Summary and Handler list apply the same source classification; no telemetry timestamps or retained diagnostic evidence are rewritten.
+
+## Actual Server .69 installation — 2026-10-06
+
+Latest deployment state supersedes older local-only/no-installation status below: portable Dashboard is running behind nginx on .69, API and new metadata MySQL are loopback-only, with a per-user login task and rotating-log restart supervisor. Both sources have verified SELECT-only table access. Owner supplied `vacuum_pump_db_reader`; real Vacuum identity is `device_id`, configured explicitly. Current discovery: 21 Handlers/162 modules (160 Compressor/two Vacuum), both source errors null. Optional ML lookup is disabled and no score is fabricated. User-task restart/backup/API checks pass; boot-before-login, other-machine LAN and browser QA are unverified. Operation/Profile/source telemetry remained unchanged. 70 unittest / 82 pytest tests and production build pass. Full acceptance record and outstanding gates: [SERVER_ACCEPTANCE.md](deployment/SERVER_ACCEPTANCE.md).
+
+Final deployed history-page/history-chart reads pass for both sources. The Vacuum fixture isolates/configurably tests both `devices_id` and `device_id`, rather than inheriting a different live `.env`; runtime formulas remain unchanged.
+
 ## Log page scrolling & viewport height fix — 2026-10-06
 
 - **Log page scrolling & sticky detachment**: Resolved phantom vertical scroll and sidebar sliding on short-content pages (Data Logs `#logs`). Removed unzoomed `body` from `min-height: calc(100vh / var(--dashboard-scale))` in `frontend/src/styles.css`, restricting scaled min-height only to `#root` descendants (`.app-shell, .login-shell`). `body` maintains standard `100vh`. Added `window.scrollTo(0, 0)` on view navigation in `frontend/src/main.jsx`.

@@ -116,13 +116,15 @@ class HistoryBrowserTests(unittest.TestCase):
         self.assertIsNotNone(result["rows"][1]["hp_1st"])
 
     def test_vacuum_only_real_family_columns_and_estimated_pressure(self):
-        raw = [{"id": 9, "devices_id": "777", "recorded_at": datetime(2026, 9, 16), "temperature": 45, "vibration": 1.02, "current_amp": None}]
-        with patch.object(browser, "fetch_one", return_value=self.module("vacuum")), patch.object(browser.telemetry_sources, "source_configured", return_value=True), patch.object(browser, "source_window", return_value={"raw_rows": raw, "total": 1, "sampled": False}):
-            result = browser.browse_history(400, 5, chart=True)
-        self.assertEqual(result["rows"][0]["temperature_c"], 45)
-        self.assertAlmostEqual(result["rows"][0]["pressure_kpa"], -73.572, places=3)
-        self.assertIsNone(result["rows"][0]["current_a"])
-        self.assertNotIn("hp_1st", result["rows"][0])
+        for identity_column in ("devices_id", "device_id"):
+            with self.subTest(identity_column=identity_column):
+                raw = [{"id": 9, identity_column: "777", "recorded_at": datetime(2026, 9, 16), "temperature": 45, "vibration": 1.02, "current_amp": None}]
+                with patch.object(browser.settings, "vacuum_device_column", identity_column), patch.object(browser, "fetch_one", return_value=self.module("vacuum")), patch.object(browser.telemetry_sources, "source_configured", return_value=True), patch.object(browser, "source_window", return_value={"raw_rows": raw, "total": 1, "sampled": False}):
+                    result = browser.browse_history(400, 5, chart=True)
+                self.assertEqual(result["rows"][0]["temperature_c"], 45)
+                self.assertAlmostEqual(result["rows"][0]["pressure_kpa"], -73.572, places=3)
+                self.assertIsNone(result["rows"][0]["current_a"])
+                self.assertNotIn("hp_1st", result["rows"][0])
 
 
 if __name__ == "__main__":
