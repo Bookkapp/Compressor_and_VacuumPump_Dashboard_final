@@ -72,7 +72,7 @@ const HANDLER_FILTER_OPTIONS = [
   { key: "REPAIR_NOW", label: "Repair Now", statuses: ["MAINTENANCE_REQUIRED"] },
   { key: "REPAIRING", label: "Repairing", statuses: ["UNDER_MAINTENANCE"] },
   { key: "OFFLINE", label: "Offline", statuses: ["OFFLINE"] },
-  { key: "NOT_EVALUATED", label: "Not evaluated", statuses: ["NOT_EVALUATED", "AWAITING_ML_SCORE"] },
+  { key: "NOT_EVALUATED", label: "Pending", statuses: ["NOT_EVALUATED", "AWAITING_ML_SCORE"] },
 ];
 const HANDLER_FILTER_BY_KEY = Object.fromEntries(HANDLER_FILTER_OPTIONS.map((item) => [item.key, item]));
 const MODULE_STATUS_OPTIONS = [
@@ -110,7 +110,7 @@ function dateText(value) {
 }
 
 function conditionLabel(value) {
-  if (value === "NOT_EVALUATED") return "NOT EVALUATED";
+  if (value === "NOT_EVALUATED") return "PENDING";
   if (value === "UNREGISTERED") return "UNREGISTERED";
   if (value === "AWAITING_ML_SCORE") return "AWAITING ML SCORE";
   if (value === "MAINTENANCE_REQUIRED") return "REPAIR NOW";
@@ -1286,7 +1286,7 @@ function Overview({ summary, devices, workOrders, alerts, api, refresh, refreshi
     { label: "Repair now", filter: "REPAIR_NOW", value: repairDevices, color: COLOR_DANGER },
     { label: "Repairing", filter: "REPAIRING", value: repairingDevices, color: COLOR_BLUE },
     { label: "Offline", filter: "OFFLINE", value: offlineDevices, color: COLOR_OFFLINE },
-    { label: "Not evaluated", filter: "NOT_EVALUATED", value: counts.NOT_EVALUATED || 0, color: COLOR_OFFLINE },
+    { label: "Pending", filter: "NOT_EVALUATED", value: counts.NOT_EVALUATED || 0, color: COLOR_OFFLINE },
   ];
   const maxSystemStatus = Math.max(...systemStatusBars.map((item) => item.value), 1);
 
@@ -1397,7 +1397,7 @@ function FleetHealthTrend({ api, refreshKey }) {
   const points = data?.range === range ? data.points || [] : [];
   const hasObservations = points.some((point) => point.observed > 0);
   const option = useMemo(() => ({
-    color: [COLOR_GOOD, COLOR_WARN, COLOR_DANGER, COLOR_OFFLINE, "#8b5cf6", "#94a3b8"],
+    color: [COLOR_GOOD, COLOR_WARN, COLOR_DANGER, COLOR_OFFLINE],
     grid: { left: 34, right: 12, top: 20, bottom: 31 },
     tooltip: {
       trigger: "axis", confine: true,
@@ -1413,10 +1413,7 @@ function FleetHealthTrend({ api, refreshKey }) {
       { name: t("Good"), key: "good", color: COLOR_GOOD },
       { name: t("Warning"), key: "warning", color: COLOR_WARN },
       { name: t("Repair now"), key: "repair_now", color: COLOR_DANGER },
-      { name: t("Offline"), key:"offline",color:COLOR_OFFLINE },
-      { name: t("Not evaluated"), key:"not_evaluated",color:"#8b5cf6" },
-      { name: t("No signal"), key:"no_signal",color:"#94a3b8" },
-      { name: t("Repairing"), key:"maintenance",color:COLOR_BLUE },
+      { name: t("Offline"), key: "offline", color: COLOR_OFFLINE },
     ].map((item) => ({ name: item.name, type: "line", data: points.map((point) => point[item.key]), smooth: false, connectNulls: false, symbol: "circle", symbolSize: 4, showSymbol: false, lineStyle: { width: 2.5 }, areaStyle: { opacity: 0.06 }, itemStyle: { color: item.color } })),
   }), [points, range, t]);
 
@@ -1427,7 +1424,7 @@ function FleetHealthTrend({ api, refreshKey }) {
       </div>
       {loading ? <Skeleton height={242} /> : error ? <div className="overview-trend-state" role="alert">{t("Could not load health trend")}: {error}</div> : !hasObservations ? <div className="overview-trend-state">{t("No diagnostic history in this period")}</div> : <EChart option={option} className="overview-trend-chart" />}
       <div className="overview-trend-footer">
-        <div className="overview-trend-legend"><span className="good">{t("Good")}</span><span className="warning">{t("Warning")}</span><span className="repair">{t("Repair now")}</span><span style={{color:COLOR_OFFLINE}}>{t("Offline")}</span><span style={{color:"#8b5cf6"}}>{t("Not evaluated")}</span><span style={{color:"#94a3b8"}}>{t("No signal")}</span><span style={{color:COLOR_BLUE}}>{t("Repairing")}</span></div>
+        <div className="overview-trend-legend"><span className="good">{t("Good")}</span><span className="warning">{t("Warning")}</span><span className="repair">{t("Repair now")}</span><span className="offline">{t("Offline")}</span></div>
         <small>{t("Gaps mean no hourly capture; unknown health is not Good")}</small>
       </div>
     </article>
@@ -1496,7 +1493,7 @@ function CompressorHealthMap({ devices, openDetail, openAll }) {
         <span className="good">{t("GOOD")}</span><span className="warning">{t("WARNING")}</span><span className="repair">{t("REPAIR NOW")}</span>
         {rows.some(row => row.modules.some(module => displayModuleStatus(module) === "UNDER_MAINTENANCE")) && <span className="repairing">{t("REPAIRING")}</span>}
         <span className="no-data">{t("No data")}</span><span className="offline">{t("Offline")}</span>
-        <span className="no-data">{t("Not evaluated")}</span>
+        <span className="no-data">{t("Pending")}</span>
       </div>
       <p className="compressor-map-key">{t("Grey: Offline after 30 minutes without signal")}</p>
       {!rows.length ? <Empty>{t("No compressor modules available")}</Empty> : (

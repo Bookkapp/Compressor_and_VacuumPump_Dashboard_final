@@ -9,6 +9,12 @@ Verification: 91 Dashboard Python tests, 13 Node tests, production frontend buil
 
 # Project — ADI Predictive Maintenance Dashboard
 
+## Pending label & Fleet Health Trend cleanup — 2026-10-07
+
+- Renamed "Not evaluated" to "Pending" across UI filters, handler status distribution, module condition labels, and map legends. Pending reflects online modules awaiting ML evaluation, strictly separated from Offline (signal loss >30m always defaults to Offline).
+- Removed Not evaluated, No signal, and Repairing from Fleet Health Trend series and legend, focusing the chart strictly on core health conditions (Good, Warning, Repair now, Offline).
+- 91 pytest tests pass and frontend production build verified.
+
 ## Compressor Online window — 2026-10-06
 
 Owner requested Compressor Handler signal stay Online through 30 minutes since the last real reading, replacing the former 20–30 minute No signal interval. More than 30 minutes remains Offline; missing timestamps remain Offline and Vacuum policy is unchanged. Shared connection state keeps Handler, summaries and overview consistent. Boundary tests updated; validation and installed API acceptance recorded in deployment/SERVER_ACCEPTANCE.md.

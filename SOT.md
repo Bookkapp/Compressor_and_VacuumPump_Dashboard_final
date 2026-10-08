@@ -9,6 +9,12 @@ Verification: 91 Dashboard Python tests, 13 Node tests, production frontend buil
 
 # Source of Truth
 
+## Pending label & Fleet Health Trend cleanup — 2026-10-07
+
+- **Pending status representation**: Renamed "Not evaluated" label to "Pending" across frontend filters, condition formatters, and status distributions. Modules and Handlers only display Pending when actively connected (ONLINE) and awaiting ML evaluation; Offline status (>30m elapsed) takes strict precedence over any unreviewed/pending condition.
+- **Fleet Health Trend simplification**: Removed Not evaluated, No signal, and Repairing lines and legends from Fleet Health Trend. The hourly historical chart now exclusively displays Good, Warning, Repair now, and Offline.
+- 91 backend tests pass and frontend production build verified.
+
 ## Compressor signal policy — 2026-10-06
 
 Current owner-approved Compressor policy: actual last-reading age <= 30 minutes is ONLINE, > 30 minutes is OFFLINE; unknown/invalid last-reading time is OFFLINE. The former Compressor NO_SIGNAL interval after 20 minutes is removed. Vacuum freshness thresholds and retained diagnostic conditions remain unchanged. Boundary coverage verifies 20 minutes, 20 minutes + 1 second, just under/exactly/just over 30 minutes.

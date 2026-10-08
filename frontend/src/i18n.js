@@ -1,6 +1,8 @@
 export const LANGUAGE_KEY = "adi_language";
 
 const TH = {
+  "Pending": "รอดำเนินการ",
+  "PENDING": "รอดำเนินการ",
   "Not evaluated": "ยังไม่ได้ประเมิน",
   "No recent Operation result": "ยังไม่มีผลวิเคราะห์ล่าสุดจาก Operation",
   "NOT EVALUATED": "ยังไม่ได้ประเมิน",

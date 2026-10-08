@@ -7,6 +7,14 @@ Verification: 91 Dashboard Python tests, 13 Node tests, production frontend buil
 
 # Change Checklist
 
+## Pending label & Fleet Health Trend cleanup — 2026-10-07
+
+- [x] Renamed user-facing "Not evaluated" label to "Pending" across frontend Handler filters (`HANDLER_FILTER_OPTIONS`), `Handler status distribution` bar (`systemStatusBars`), `conditionLabel`, and module map legends.
+- [x] Added Thai translations for "Pending" / "PENDING" ("รอดำเนินการ") in `frontend/src/i18n.js`.
+- [x] Removed `not_evaluated`, `no_signal`, and `maintenance` from `FleetHealthTrend` series and legend, focusing chart exclusively on 4 core conditions: Good, Warning, Repair now, Offline.
+- [x] Confirmed and verified strict separation between Pending and Offline: signal loss >30m always defaults to Offline; Pending only applies when machine is actively Online/connected and awaiting ML evaluation.
+- [x] 91 backend tests and production frontend build pass cleanly.
+
 ## Compressor signal Online through 30 minutes — 2026-10-06
 
 - [x] Owner-requested removal of Compressor 20–30 minute NO_SIGNAL state in shared connection policy.

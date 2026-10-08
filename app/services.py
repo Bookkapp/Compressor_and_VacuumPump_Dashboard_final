@@ -1042,7 +1042,7 @@ def get_summary() -> dict[str, Any]:
     status_rows = fetch_all("""SELECT d.device_uid, d.status, d.last_seen,
         EXISTS(SELECT 1 FROM pm_modules m WHERE m.device_id=d.id AND m.telemetry_source='compressor') AS has_compressor
         FROM pm_devices d""")
-    counts: dict[str, int] = {s: 0 for s in ["NORMAL", "WATCH", "WARNING", "MAINTENANCE_REQUIRED", "UNDER_MAINTENANCE", "OFFLINE"]}
+    counts: dict[str, int] = {s: 0 for s in ["NORMAL", "WATCH", "WARNING", "MAINTENANCE_REQUIRED", "UNDER_MAINTENANCE", "OFFLINE", "NOT_EVALUATED"]}
     connection_counts: dict[str, int] = {"ONLINE": 0, "STALE": 0, "NO_SIGNAL": 0, "OFFLINE": 0}
     from .operation_pull import operation_pull
     displayed = {d['device_uid']:d['status'] for d in list_devices()} if operation_pull.status['enabled'] else {}

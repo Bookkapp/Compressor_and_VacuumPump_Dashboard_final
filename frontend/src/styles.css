@@ -4017,6 +4017,7 @@ html[lang="th"] textarea {
 .overview-trend-legend span::before { content: ""; display: block; width: 8px; height: 8px; border-radius: 50%; background: var(--green); }
 .overview-trend-legend .warning::before { background: var(--amber); }
 .overview-trend-legend .repair::before { background: var(--red); }
+.overview-trend-legend .offline::before { background: var(--muted); }
 .overview-distribution-panel .status-bars { padding-top: 12px; gap: 13px; }
 .overview-work-grid { grid-template-columns: minmax(0, 1.45fr) minmax(330px, 1fr); }
 .overview-work-grid > .panel:last-child { grid-column: 1; }
