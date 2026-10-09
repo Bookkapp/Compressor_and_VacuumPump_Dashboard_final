@@ -9,6 +9,14 @@ Verification: 91 Dashboard Python tests, 13 Node tests, production frontend buil
 
 # Project — ADI Predictive Maintenance Dashboard
 
+## Operation reader acceptance — 2026-10-08
+
+Verified `.73` reader grants from actual .69, resolving the earlier 1044 error. Both raw sources and Operation connection work; two spaced status reads and a backed-up API restart preserve cursor 0 and receipt/Alert counts. Producer feed/sequence/identity tables remain empty, so real delivery and identity progression are still pending. See deployment/SERVER_ACCEPTANCE.md.
+
+## Installed .69 update — 2026-10-08
+
+Pulled `5bfa10a` from GitHub, preserved existing credentials/services and backed up metadata/config/frontend, then installed dependencies, built and restarted the API. 91 Python/13 Node tests and production build pass; Admin login/frontend/raw sources/hourly trend API pass. New metadata tables use InnoDB. Operation feed access is blocked by `.73` analytics permission error 1044; companion export/grants and integrated feed acceptance remain pending. Actual record: deployment/SERVER_ACCEPTANCE.md.
+
 ## Pending label & Fleet Health Trend cleanup — 2026-10-07
 
 - Renamed "Not evaluated" to "Pending" across UI filters, handler status distribution, module condition labels, and map legends. Pending reflects online modules awaiting ML evaluation, strictly separated from Offline (signal loss >30m always defaults to Offline).

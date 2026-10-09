@@ -9,6 +9,14 @@ Verification: 91 Dashboard Python tests, 13 Node tests, production frontend buil
 
 # Source of Truth
 
+## Operation connectivity resolved — 2026-10-08 09:48
+
+Actual .69 authenticated SELECT now succeeds on all three `.73` Operation feed tables. Receiver is connected with no error; empty producer tables give cursor 0/backlog 0. Two polls ten seconds apart and an installed API restart passed, preserving cursor and existing receipt/Alert counts. Both raw sources work. Real producer publication, identity and event/cursor progression remain pending eligible exports; earlier 1044 descriptions below are historical.
+
+## Actual .69 release update — 2026-10-08
+
+Installed GitHub revision `5bfa10a` with existing private config preserved and new Operation keys added. API restarted after metadata backup; 91 Python/13 Node/build passed. Both raw sources and Admin login work; additive Operation/hourly metadata tables are InnoDB. Receiver enabled but `.73` analytics access fails with 1044; no feed ingestion/eligible health/cursor advancement is verified. Pending remains the honest missing-evidence state. Companion `.73` export/grants are outstanding; no source/Profile/model mutation occurred. Details: deployment/SERVER_ACCEPTANCE.md.
+
 ## Pending label & Fleet Health Trend cleanup — 2026-10-07
 
 - **Pending status representation**: Renamed "Not evaluated" label to "Pending" across frontend filters, condition formatters, and status distributions. Modules and Handlers only display Pending when actively connected (ONLINE) and awaiting ML evaluation; Offline status (>30m elapsed) takes strict precedence over any unreviewed/pending condition.

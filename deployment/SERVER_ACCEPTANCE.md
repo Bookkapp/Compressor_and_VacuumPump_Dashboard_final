@@ -1,5 +1,19 @@
 # Dashboard Server acceptance — 6 October 2026
 
+## Operation grants verified from .69 — 8 October 2026, 09:48 Bangkok
+
+After the owner reported `.73` completing restricted reader grants, authenticated SELECT from the actual Dashboard account succeeded on all three analytics feed/sequence/identity tables. Each table currently contains zero rows. The prior 1044 blocker is resolved. Receiver observations ten seconds apart both reported enabled=true, connected=true, error_type=null, last_seq=0, backlog=0, with advancing successful poll timestamps; both raw telemetry sources also reported successful reads.
+
+Metadata backup succeeded (7,843,691 bytes), then the installed API was restarted through its supervisor. Admin login, health and frontend returned HTTP 200; receiver reconnected and retained its single cursor at sequence 0. Before/after counts were unchanged: Operation identities 0, receipts 0 and existing Alerts 1. No extra delivery/Alert was observed during this empty-feed restart. Producer identity preservation, nonzero cursor advancement, payload ingestion and replay deduplication remain unverified until real eligible exports populate the producer tables. No source/sequence/Profile edits or fabricated evidence were used.
+
+## GitHub update deployed — 8 October 2026
+
+Owner requested pulling GitHub and updating the installed system. Clean tracked checkout fast-forwarded from `eb3b0972dd0c2d911942b15ee16aa2f63e26ab75` to `5bfa10a` (one-way Operation receiver/chart changes and Pending/Fleet trend cleanup). Existing `.env` values were compared and preserved; only seven new Operation settings were added by the release. Private pre-update config and built frontend are preserved in ignored `deployment/runtime/rollback-20261008/`. Metadata backups before pull and restart succeeded (approximately 7.5 MB). Existing supervisor, proxy, local MySQL, source grants and stored login accounts were retained.
+
+Installed dependencies, 79 unittest tests / 91 pytest tests / 19 subtests, 13 Node tests and production frontend build all passed. Existing dependency audit/chunk warnings remain. API startup completed at 08:55:05 Bangkok; Admin login, frontend, device API and hourly Fleet trend API returned HTTP 200. Both actual raw-source reads succeeded without source errors. New Operation/hourly/status metadata tables were inspected and all use InnoDB. No telemetry or Profile/model data was altered.
+
+**Outstanding dependency:** the configured Operation reader cannot access `.73` `ht9046mx_analytics` (MySQL 1044). Operation pull is enabled but unavailable, reported by the installed receiver while retaining its checkpoint. No valid feed result or cursor advancement is claimed; fresh Compressor modules without eligible evidence remain Pending. The `.73` operator/DBA must complete the companion export migrations and restricted SELECT grants on `ht9046mx_dashboard_feed`, `ht9046mx_dashboard_sequence` and `ht9046mx_dashboard_identity`, using the actual Dashboard reader from private `.env`. Operation Server access was not available in this session; no remote grant, firewall change or Worker restart was performed. Full instructions: ONE_WAY_MYSQL_UPDATE_20261007.md. Browser/LAN/reboot acceptance remains as previously documented.
+
 ## Compressor Handler signal policy — 18:35 Bangkok
 
 Owner requested Online for Compressor readings through 30 minutes, removing earlier No signal behavior. Updated shared connectivity policy and source classification: real canonical HT9046MX Handler IDs now use stored Compressor module membership in both Handler list and summary, including shared Handlers. Pure Vacuum cadence and diagnostic evidence are unchanged. Missing/invalid time remains Offline; exactly 30 minutes remains Online, over 30 minutes Offline.

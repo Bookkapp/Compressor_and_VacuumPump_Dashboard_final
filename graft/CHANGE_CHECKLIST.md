@@ -7,6 +7,20 @@ Verification: 91 Dashboard Python tests, 13 Node tests, production frontend buil
 
 # Change Checklist
 
+## Operation grant and receiver restart checks — 2026-10-08
+
+- [x] Actual .69 reader SELECT on feed/sequence/identity succeeds; former 1044 resolved; both raw sources work.
+- [x] Receiver status checked twice ten seconds apart: connected, no error, cursor 0/backlog 0.
+- [x] Metadata backup and installed API restart passed; cursor and identity/receipt/Alert counts retained without extra delivery.
+- [ ] Producer tables are empty: real export/identity publication, cursor progression and populated-feed deduplication remain unverified.
+
+## GitHub pull and installed Dashboard update — 2026-10-08
+
+- [x] Fast-forward eb3b097 -> 5bfa10a; private config/frontend and metadata backups preserved.
+- [x] Existing environment values retained; new Operation keys added; dependencies installed; 91 Python/13 Node tests and production build passed.
+- [x] Installed API restarted; Admin login/frontend/device/hourly trend endpoints and both raw-source reads pass; additive metadata tables are InnoDB.
+- [ ] Companion `.73` export migration/SELECT grants and feed ingestion acceptance: configured analytics reader denied with MySQL 1044. No fabricated result or source/Profile/model mutation.
+
 ## Pending label & Fleet Health Trend cleanup — 2026-10-07
 
 - [x] Renamed user-facing "Not evaluated" label to "Pending" across frontend Handler filters (`HANDLER_FILTER_OPTIONS`), `Handler status distribution` bar (`systemStatusBars`), `conditionLabel`, and module map legends.
