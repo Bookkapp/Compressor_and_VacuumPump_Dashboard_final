@@ -1,3 +1,7 @@
+## 9 October 2026 — Empty-feed receiver diagnostic handoff
+
+Added deployment/EMPTY_FEED_RECEIVER_HANDOFF_20261009.md. Diagnose producer .73 first; no Active can still export NOT_EVALUATED/Pending. Then verify actual nonempty payload/cursor/identity/receipt progression on .69. Historical empty-feed connectivity/restart is not delivery acceptance. Documentation only; no new Server check, runtime/DB/Profile change or restart.
+
 
 ## 7 Oct 2026 — one-way Operation delivery and hourly Fleet history
 
