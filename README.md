@@ -226,7 +226,7 @@ Alerts ใช้นโยบาย deduplicate ตามเครื่อง/Mo
 
 สำหรับ **portable installation ที่มี runtime/binaries ครบ** รันจาก repository root:
 
-`check_portable.py` ต้องมี `httpx` ซึ่งระบุใน `requirements-dev.txt` หาก environment มีเฉพาะ runtime dependencies ให้ติดตั้งชุด development requirements ก่อนใช้สคริปต์ตรวจนี้
+`check_portable.py` ใช้ `httpx` ซึ่งรวมอยู่ใน `requirements.txt` แล้ว จึงใช้ environment เดียวกับ API ได้
 
 ```powershell
 .venv\Scripts\python.exe deployment\backup_metadata.py
@@ -242,8 +242,6 @@ Alerts ใช้นโยบาย deduplicate ตามเครื่อง/Mo
 
 Rollback โดยคืน revision/config ที่บันทึกไว้แล้ว restart ผ่าน service manager เดิม โดยรักษา source data และ additive metadata การย้อน schema/restore ฐานข้อมูลต้องประเมินแยกจากการย้อนโค้ด ไม่ลบตาราง/receipts/cursor เพื่อทำให้ error หาย
 
-ไฟล์ `RELEASE_MANIFEST.json` และ `RELEASE_SHA256.json` เป็นหลักฐานแพ็กเกจเดิม ไม่ใช่ inventory/checksum ที่รับรอง checkout ปัจจุบันหลังมี commit เพิ่มเติม หากต้องการแพ็กเกจติดตั้งที่ตรวจ checksum ได้ ให้จัดทำ manifest ใหม่จาก revision ที่จะส่งมอบจริง
-
 ## 8. ไฟล์หลักและการตรวจสำหรับ Developer
 
 | Path | หน้าที่ |
@@ -254,16 +252,9 @@ Rollback โดยคืน revision/config ที่บันทึกไว้
 | `app/operation_pull.py` | อ่าน ordered feed, ตรวจ stream และประสาน receipts/cursor |
 | `app/services.py`, `app/diagnostics.py` | สถานะ, workflow และ Vacuum rules |
 | `app/health_history.py` | ประวัติสถานะรายชั่วโมง |
-| `frontend/` | React UI และ frontend tests |
+| `frontend/` | React UI และ configuration สำหรับ build หน้าเว็บ |
 | `deployment/` | proxy, supervisor, backup และ verification scripts |
 
-ก่อนส่งมอบการแก้โค้ดให้รัน tests ใน environment แยกที่ไม่มี production credentials/ฐานข้อมูลจริง แล้ว build frontend ของ revision นั้น:
+หลังแก้ frontend ให้ build จาก revision ที่จะติดตั้งด้วย `npm ci` และ `npm run frontend:build` ส่วน backend ให้ใช้ environment ของ installation และ startup ตามข้อ 4–5
 
-```powershell
-.venv\Scripts\python.exe -m pip install -r requirements-dev.txt
-.venv\Scripts\python.exe -m pytest -q
-node --test (Get-ChildItem -Path frontend/tests/*.test.mjs).FullName
-npm run frontend:build
-```
-
-สคริปต์เก่า เช่น `server.js`, firmware/MQTT examples และ mock/import/QA scripts ไม่ใช่ entrypoint ของ Production Dashboard ชุดนี้ ไม่ต้องรันเพื่อ Deploy และไม่ใช้สร้างสถานะทดแทนข้อมูลจริง
+Repository ชุดนี้เก็บ source หน้าเว็บ/API, build assets, Config, schema และเครื่องมือดูแล Server ที่ใช้จริง การตัดสินสถานะยังอาศัย Raw readings และผล Operation ตาม contract เดิม

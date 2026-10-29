@@ -3,3 +3,5 @@ uvicorn[standard]==0.34.0
 pymysql==1.1.1
 cryptography==44.0.0
 tzdata==2026.2; sys_platform == "win32"
+# Used by the deployed API/WebSocket/source health check.
+httpx==0.28.1
